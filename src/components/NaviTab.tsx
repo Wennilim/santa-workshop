@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
 import { MobileDrawer } from "./MobileDrawer";
 import { LogoutIcon, MenuIcon } from "../assets/icons";
+import { Link } from "@tanstack/react-router";
 
 const menu = [
-  { id: 1, name: "Dashboard", link: "/dashboard" },
+  { id: 1, name: "Dashboard", link: "/" },
   { id: 2, name: "Wishlist", link: "/wishlist" },
 ];
 
@@ -22,26 +23,32 @@ export const NaviTab = () => {
             const isActive = activeMenu === item.id;
 
             return (
-              <button
-                key={item.id}
-                onClick={() => setActiveMenu(item.id)}
-                className={cn(
-                  "relative px-4 py-2 rounded-full text-[16px] font-semibold cursor-pointer",
-                  isActive
-                    ? "text-[#2d6a4f]"
-                    : "text-neutral-500 hover:bg-neutral-100 hover:transition-all hover:duration-300 hover:ease-in-out",
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="active-pill"
-                    className="absolute inset-0 rounded-full bg-[#d8f3dc]"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
+              <Link to={item.link}>
+                <button
+                  key={item.id}
+                  onClick={() => setActiveMenu(item.id)}
+                  className={cn(
+                    "relative px-4 py-2 rounded-full text-[16px] font-semibold cursor-pointer",
+                    isActive
+                      ? "text-[#2d6a4f]"
+                      : "text-neutral-500 hover:bg-neutral-100 hover:transition-all hover:duration-300 hover:ease-in-out",
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="active-pill"
+                      className="absolute inset-0 rounded-full bg-[#d8f3dc]"
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                      }}
+                    />
+                  )}
 
-                <span className="relative z-10">{item.name}</span>
-              </button>
+                  <span className="relative z-10">{item.name}</span>
+                </button>
+              </Link>
             );
           })}
 

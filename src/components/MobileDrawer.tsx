@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { CloseIcon, LogoutIcon } from "../assets/icons";
 import { cn } from "../utils/cn";
+import { Link } from "@tanstack/react-router";
 
 type MenuItem = {
   id: number;
@@ -95,33 +96,35 @@ export const MobileDrawer = ({
                 const isActive = activeMenu === item.id;
 
                 return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      onChangeMenu(item.id);
-                      onClose();
-                    }}
-                    className={cn(
-                      "relative w-full text-left px-4 py-3 rounded-2xl font-semibold transition",
-                      isActive
-                        ? "text-[#2d6a4f]"
-                        : "text-neutral-600 hover:bg-black/5",
-                    )}
-                  >
-                    {isActive && (
-                      <motion.span
-                        layoutId="mobile-active-item"
-                        className="absolute inset-0 rounded-2xl bg-[#d8f3dc]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 35,
-                        }}
-                      />
-                    )}
+                  <Link to={item.link}>
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onChangeMenu(item.id);
+                        onClose();
+                      }}
+                      className={cn(
+                        "relative cursor-pointer w-full text-left px-4 py-3 rounded-2xl font-semibold transition",
+                        isActive
+                          ? "text-[#2d6a4f]"
+                          : "text-neutral-600 hover:bg-black/5",
+                      )}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="mobile-active-item"
+                          className="absolute inset-0 rounded-2xl bg-[#d8f3dc]"
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 35,
+                          }}
+                        />
+                      )}
 
-                    <span className="relative z-10">{item.name}</span>
-                  </button>
+                      <span className="relative z-10">{item.name}</span>
+                    </button>
+                  </Link>
                 );
               })}
             </div>
