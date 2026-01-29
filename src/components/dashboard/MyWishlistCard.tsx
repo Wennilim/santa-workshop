@@ -114,7 +114,7 @@ export const MyWishlistCard = () => {
               key={item.id}
               className="p-5 bg-white/40 rounded-[10px] flex items-center justify-between"
             >
-              <span className="text-lg font-semibold truncate">{item.name} hdshgdahsdg ahdhasdaj jdhasjdhasjdk</span>
+              <span className="text-lg font-semibold truncate">{item.name}</span>
               <button
                 onClick={() =>
                   setNewIdea(newIdea.filter((i) => i.id !== item.id))
