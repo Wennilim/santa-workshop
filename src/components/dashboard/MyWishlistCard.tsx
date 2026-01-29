@@ -55,14 +55,14 @@ export const MyWishlistCard = () => {
       id="my-wishlist"
       aria-label="My wishlist"
       className={cn(
-        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col",
+        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col xl:w-[40%]",
         newIdea.length > 0 ? "min-h-[600px]" : "min-h-[620px]",
       )}
     >
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-6">
           <img src="/icons/wishlist.svg" alt="wishlist" className="size-12" />
-          <h5 className="font-[dynapuff] text-[18px] md:text-[32px] font-semibold text-[#E63946]">
+          <h5 className="font-[dynapuff] text-[24px] md:text-[32px] font-semibold text-[#E63946]">
             My Wishlist
           </h5>
         </div>
@@ -114,11 +114,12 @@ export const MyWishlistCard = () => {
               key={item.id}
               className="p-5 bg-white/40 rounded-[10px] flex items-center justify-between"
             >
-              <span className="text-lg font-semibold">{item.name}</span>
+              <span className="text-lg font-semibold truncate">{item.name} hdshgdahsdg ahdhasdaj jdhasjdhasjdk</span>
               <button
                 onClick={() =>
                   setNewIdea(newIdea.filter((i) => i.id !== item.id))
                 }
+                disabled={!isEdit}
                 className={cn(
                   "cursor-pointer rounded-lg p-2.5 shadow-lg bg-[#FDF2F8]",
                   "hover:bg-[#FDF2F8]/80",
@@ -127,7 +128,7 @@ export const MyWishlistCard = () => {
                   "hover:scale-110",
                   "active:scale-95",
                   "transition-transform duration-200",
-                  isEdit ? "opacity-100" : "opacity-0",
+                  isEdit ? "opacity-100" : "opacity-0 cursor-auto",
                 )}
               >
                 <DeleteIcon className="size-6 text-[#E63946]" />
@@ -196,7 +197,7 @@ export const MyWishlistCard = () => {
             block: "nearest",
           });
         }}
-        className="mt-auto md:mt-8 w-full p-5 md:p-8 rounded-md text-[18px] border-white border-dashed border-2 text-[#E63946] md:text-[20px] cursor-pointer"
+        className="mt-auto md:mt-8 xl:mt-auto w-full p-5 md:p-8 rounded-md text-[18px] border-white border-dashed border-2 text-[#E63946] md:text-[20px] cursor-pointer"
       >
         + Add Idea
       </button>

@@ -1,4 +1,5 @@
 import { MyWishlistCard } from "../components/dashboard/MyWishlistCard";
+import { RulesAgendaCard } from "../components/dashboard/RulesAgendaCard";
 import { SantaAssignmentCard } from "../components/dashboard/SantaAssignmentCard";
 import { SnowGlobeCard } from "../components/dashboard/SnowGlobeCard";
 
@@ -9,7 +10,7 @@ export const DashboardPage = () => {
         <h1 className="text-[36px] md:text-[48px] font-bold font-[dynapuff]">
           Ho ho ho, Wen Ni!{" "}
         </h1>
-        <p className="text-[18px] md:text-[24px] text-[#2d6a4f]">
+        <p className="text-[18px] md:text-[24px] text-[#2d6a4f] mb-4 md:mb-0">
           Your'e currently on the "Nice List". Let's get festive!
         </p>{" "}
         <img
@@ -23,7 +24,10 @@ export const DashboardPage = () => {
           <SantaAssignmentCard />
           <SnowGlobeCard />
         </div>
+        <div className="flex flex-col xl:flex-row w-full gap-8">
           <MyWishlistCard />
+          <RulesAgendaCard />
+        </div>
       </div>
     </section>
   );
