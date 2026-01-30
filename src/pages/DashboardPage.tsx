@@ -32,11 +32,6 @@ const row: Variants = {
   },
 };
 
-const cardHover = {
-  whileHover: { y: -4, scale: 1.01 },
-  transition: { type: "spring" as const, stiffness: 300, damping: 20 },
-};
-
 export const DashboardPage = () => {
   return (
     <motion.section
@@ -46,7 +41,6 @@ export const DashboardPage = () => {
       initial="hidden"
       animate="visible"
     >
-      {/* Greeting */}
       <motion.div
         id="greeting"
         className="relative flex flex-col"
@@ -75,14 +69,12 @@ export const DashboardPage = () => {
       </motion.div>
 
       <div className="py-8">
-        {/* Row 1 */}
         <motion.div
           className="flex flex-col lg:flex-row justify-between "
           variants={row}
         >
           <motion.div
             variants={fadeUp}
-            {...cardHover}
             className="w-full flex flex-col lg:flex-row gap-8"
           >
             <SantaAssignmentCard />
@@ -90,14 +82,12 @@ export const DashboardPage = () => {
           </motion.div>
         </motion.div>
 
-        {/* Row 2 */}
         <motion.div
           className="flex flex-col lg:flex-row w-full gap-8 mt-8 xl:items-stretch"
           variants={row}
         >
           <motion.div
             variants={fadeUp}
-            {...cardHover}
             className="w-full h-auto flex flex-col lg:flex-row gap-8"
           >
             <MyWishlistCard />
