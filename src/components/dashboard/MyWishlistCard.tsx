@@ -55,7 +55,7 @@ export const MyWishlistCard = () => {
       id="my-wishlist"
       aria-label="My wishlist"
       className={cn(
-        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col xl:w-[40%]",
+        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col h-full lg:w-[40%]",
         newIdea.length > 0 ? "min-h-[600px]" : "min-h-[620px]",
       )}
     >
@@ -114,7 +114,9 @@ export const MyWishlistCard = () => {
               key={item.id}
               className="p-5 bg-white/40 rounded-[10px] flex items-center justify-between"
             >
-              <span className="text-lg font-semibold truncate">{item.name}</span>
+              <span className="text-lg font-semibold truncate">
+                {item.name}
+              </span>
               <button
                 onClick={() =>
                   setNewIdea(newIdea.filter((i) => i.id !== item.id))
@@ -197,7 +199,7 @@ export const MyWishlistCard = () => {
             block: "nearest",
           });
         }}
-        className="mt-auto md:mt-8 xl:mt-auto w-full p-5 md:p-8 rounded-md text-[18px] border-white border-dashed border-2 text-[#E63946] md:text-[20px] cursor-pointer"
+        className="mt-auto md:mt-8 lg:mt-auto w-full p-5 md:p-8 rounded-md text-[18px] border-white border-dashed border-2 text-[#E63946] md:text-[20px] cursor-pointer"
       >
         + Add Idea
       </button>

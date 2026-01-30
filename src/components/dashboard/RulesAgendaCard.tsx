@@ -125,7 +125,7 @@ export const RulesAgendaCard = () => {
       id="rules-agenda"
       aria-label="Rules agenda"
       className={cn(
-        "bg-[#FEFAE0] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-4 md:p-6 lg:p-5 xl:p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col xl:w-[70%]",
+        "bg-[#FEFAE0] rounded-[50px] border-8 w-full border-[#ffffff] shadow-lg p-4 md:p-6 lg:p-5 xl:p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col h-full lg:w-[60%]",
       )}
     >
       <div className="flex items-center gap-6 mt-2 mb-6 ml-2">
