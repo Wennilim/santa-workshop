@@ -1,13 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { WishListPage } from "../pages/WishListPage";
 
 export const Route = createFileRoute("/wishlist")({
-  component: WishlistComponent,
+  component: RouteComponent,
 });
 
-function WishlistComponent() {
-  return (
-    <div className="">
-      <h1 className="text-2xl font-bold">Wishlist</h1>
-    </div>
-  );
+function RouteComponent() {
+  return <WishListPage />;
 }

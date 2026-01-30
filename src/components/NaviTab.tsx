@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
 import { MobileDrawer } from "./MobileDrawer";
 import { LogoutIcon, MenuIcon } from "../assets/icons";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
@@ -11,7 +11,9 @@ const menu = [
 ];
 
 export const NaviTab = () => {
-  const [activeMenu, setActiveMenu] = useState<number>(1);
+  const location = useLocation();
+  const activeMenu =
+    menu.find((item) => item.link === location.pathname)?.id || 1;
   const [openDrawer, setOpenDrawer] = useState(false);
 
   return (
@@ -26,7 +28,6 @@ export const NaviTab = () => {
               <Link to={item.link}>
                 <button
                   key={item.id}
-                  onClick={() => setActiveMenu(item.id)}
                   className={cn(
                     "relative px-4 py-2 rounded-full text-[16px] font-semibold cursor-pointer",
                     isActive
@@ -74,7 +75,7 @@ export const NaviTab = () => {
         onClose={() => setOpenDrawer(false)}
         menu={menu}
         activeMenu={activeMenu}
-        onChangeMenu={setActiveMenu}
+        onChangeMenu={() => {}}
         onLogout={() => console.log("logout")}
       />
     </>
