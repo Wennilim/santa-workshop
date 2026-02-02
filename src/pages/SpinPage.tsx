@@ -3,6 +3,7 @@ import { DECORATIONS, NAMES } from "../components/spin/constants/spin";
 import { InfoCard } from "../components/spin/InfoCard";
 import { Roulette } from "../components/spin/Roulette";
 import { getLoopAnimation } from "../components/spin/utils/spin";
+import { useState } from "react";
 
 const pageVariants: Variants = {
   hidden: { opacity: 0 },
@@ -33,6 +34,7 @@ const decoEnterVariants = (delay = 0): Variants => ({
 
 export const SpinPage = () => {
   const reduceMotion = useReducedMotion();
+  const [isSpinning, setIsSpinning] = useState(false);
   return (
     <motion.section
       id="roulette-wheel"
@@ -77,7 +79,7 @@ export const SpinPage = () => {
           className="sm:border-5 sm:border-dashed sm:border-[#83BAA9] w-full h-full mt-6 mb-12 xl:mt-12 rounded-[70px] sm:bg-[#FFFCF5] xl:max-w-[1200px]"
           variants={fadeUpVariants}
         >
-          <Roulette />
+          <Roulette {...{ isSpinning, setIsSpinning }} />
         </motion.div>
 
         <motion.div
@@ -89,7 +91,7 @@ export const SpinPage = () => {
             <InfoCard
               title="Status"
               titleColor="#E63946"
-              value="Ready to Spin"
+              value={isSpinning ? "Spinning..." : "Ready to Spin"}
               bgColor="#FFD6D6"
             />
           </motion.div>

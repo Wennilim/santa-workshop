@@ -1,5 +1,5 @@
 import { motion, useAnimation } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   GiftIcon,
   SnowflakeIcon,
@@ -33,9 +33,15 @@ const NUM_SEGMENTS = SEGMENTS.length;
 const SEGMENT_ANGLE = 360 / NUM_SEGMENTS;
 const WHEEL_SIZE = 600;
 
-export const Roulette = () => {
+export const Roulette = ({
+  isSpinning,
+  setIsSpinning,
+}: {
+  isSpinning: boolean;
+  setIsSpinning: (value: boolean) => void;
+}) => {
   const controls = useAnimation();
-  const [isSpinning, setIsSpinning] = useState(false);
+
   const [winner, setWinner] = useState<string | null>(null);
   const [rotation, setRotation] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +54,7 @@ export const Roulette = () => {
     setIsSpinning(true);
     setWinner(null);
 
-    const winnerIndex = 0;
+    const winnerIndex = 1;
     const targetAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
 
     const current = normalize(rotation);
@@ -70,29 +76,36 @@ export const Roulette = () => {
     setIsSpinning(false);
   };
 
-  const backgroundGradient = `conic-gradient(
-    ${SEGMENTS.map((seg, i) => {
-      const start = i * (100 / NUM_SEGMENTS);
-      const end = (i + 1) * (100 / NUM_SEGMENTS);
-      return `${seg.color} ${start}% ${end}%`;
-    }).join(", ")}
-  )`;
+  const backgroundGradient = useMemo(() => {
+    const total = NUM_SEGMENTS;
+    const seg = 100 / total;
+
+    const stops: string[] = [];
+
+    for (let i = 0; i < total; i++) {
+      const start = i * seg;
+      const end = (i + 1) * seg;
+      stops.push(`${SEGMENTS[i].color} ${start}% ${end}%`);
+    }
+
+    return `conic-gradient(${stops.join(", ")})`;
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
-    if (isOpen) {
-      root.classList.add("overflow-hidden");
-    } else {
-      root.classList.remove("overflow-hidden");
-    }
+    if (isOpen) root.classList.add("overflow-hidden");
+    else root.classList.remove("overflow-hidden");
+
     return () => root.classList.remove("overflow-hidden");
   }, [isOpen]);
 
   return (
     <div className="flex flex-col items-center justify-center md:min-h-screen font-sans overflow-hidden">
       <WinningModal {...{ isOpen, setIsOpen, winner }} />
+
       <div className="relative -top-36 sm:-top-10 md:top-0 scale-50 sm:scale-75 md:scale-100">
         <RoulettePointer />
+
         {/* --- 转盘外框 --- */}
         <div
           className="rounded-full bg-[#7A4B27] shadow md:shadow-2xl flex items-center justify-center border-16 border-[#653C1D]"
@@ -106,13 +119,48 @@ export const Roulette = () => {
               height: WHEEL_SIZE,
               background: backgroundGradient,
               transform: "rotate(-90deg)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transformStyle: "preserve-3d",
+              willChange: "transform",
             }}
             animate={controls}
             initial={{ rotate: 0 }}
           >
+            {/* ✅ 关键：加一层“边缘柔化 overlay” */}
+            <div
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background: `
+                  radial-gradient(circle at center,
+                    rgba(0,0,0,0.00) 0%,
+                    rgba(0,0,0,0.04) 55%,
+                    rgba(0,0,0,0.10) 100%
+                  )
+                `,
+                mixBlendMode: "multiply",
+              }}
+            />
+
+            {/* ✅ 关键：加一层“扇形分割阴影线”（超细，不会像白线那样突兀） */}
+            <div
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background: `
+                  repeating-conic-gradient(
+                    rgba(0,0,0,0.12) 0deg 0.25deg,
+                    rgba(0,0,0,0.00) 0.25deg ${SEGMENT_ANGLE}deg
+                  )
+                `,
+                mixBlendMode: "multiply",
+                opacity: 0.35,
+              }}
+            />
+
             {/* --- 扇形内容 --- */}
             {SEGMENTS.map((segment, i) => {
               const rotate = i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+
               return (
                 <div
                   key={i}
@@ -120,23 +168,27 @@ export const Roulette = () => {
                   style={{
                     transform: `translateX(-50%) rotate(${rotate}deg)`,
                     width: "60px",
+                    pointerEvents: "none",
                   }}
                 >
-                  {/* 文字 - 修正为垂直对齐指向圆心 */}
                   <span
-                    className={`text-[13px] font-bold mb-1 ${getTextColorClass(segment.color)}`}
+                    className={`text-[13px] font-bold mb-1 ${getTextColorClass(
+                      segment.color,
+                    )}`}
                     style={{
                       writingMode: "vertical-rl",
                       transform: "rotate(180deg)",
                       textOrientation: "mixed",
+                      textShadow: "0 1px 0 rgba(0,0,0,0.10)",
                     }}
                   >
                     {segment.name}
                   </span>
 
-                  {/* 图标 - 修正旋转以保持直立感 */}
                   <div
-                    className={`mt-1 transform rotate-180 opacity-70 ${getTextColorClass(segment.color)}`}
+                    className={`mt-1 transform rotate-180 opacity-70 ${getTextColorClass(
+                      segment.color,
+                    )}`}
                   >
                     {renderIcon(segment, "w-4 h-4")}
                   </div>
@@ -149,11 +201,12 @@ export const Roulette = () => {
         {/* --- 中心 SPIN 按钮 --- */}
         <RouletteSpinButton {...{ handleSpin, isSpinning }} />
       </div>
+
       <div className="absolute bottom-0 flex sm:hidden flex-col sm:flex-row gap-6 mb-12 w-full justify-center items-center">
         <InfoCard
           title="Status"
           titleColor="#E63946"
-          value={isSpinning ? "Spinning" : "Ready to Spin"}
+          value={isSpinning ? "Spinning..." : "Ready to Spin"}
           bgColor="#FFD6D6"
         />
         <InfoCard

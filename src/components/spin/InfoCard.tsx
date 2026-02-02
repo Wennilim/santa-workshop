@@ -13,7 +13,7 @@ export const InfoCard = ({
 }: TInfoCardProps) => {
   return (
     <div
-      className={`border-8 border-white px-12 py-6 shadow-[0_4px_4px_0_rgba(0,0,0,0.10)] rounded-[16px] flex flex-col gap-3 items-center max-w-[280px] w-full`}
+      className={`border-8 border-white px-12 py-6 shadow-[0_4px_4px_0_rgba(0,0,0,0.10)] rounded-[16px] flex flex-col gap-3 items-center w-[280px]`}
       style={{ backgroundColor: bgColor }}
     >
       <p

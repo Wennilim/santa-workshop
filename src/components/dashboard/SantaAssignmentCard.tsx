@@ -1,5 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12,
+    },
+  },
+};
 
 export const SantaAssignmentCard = () => {
   return (
@@ -23,12 +36,21 @@ export const SantaAssignmentCard = () => {
         </div>
 
         <Link to="/spin">
-          <button className="bg-[#2d6a4f] mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit">
+          <motion.button
+            variants={itemVariants}
+            whileHover={{
+              boxShadow: "0 20px 40px",
+              y: -5,
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="bg-[#2d6a4f] mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
+          >
             <img src="/icons/eye.svg" alt="eye icon" />
             <p className="text-[14px] md:text-[16px] font-semibold">
               Reveal My Recipient
             </p>
-          </button>
+          </motion.button>
         </Link>
 
         <img

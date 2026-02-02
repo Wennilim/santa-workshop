@@ -8,6 +8,7 @@ export interface Segment {
 
 export const NAMES = [
   "Wen Ni",
+  "Yuqi",
   "Chian Lei",
   "Pei Ling",
   "Fiona",
@@ -18,15 +19,17 @@ export const NAMES = [
   "Han Wei",
   "Kai Jun",
   "CC",
+  "Hooi Yan",
+  "YS",
+  "CJ",
+  "KJ",
   "Wan Ying",
   "Kai Ren",
   "Yi Chien",
   "Chloe",
-  "Yuqi",
   "Anael",
 ];
 
-// Helper function to get icon type based on index
 export const getIconType = (
   index: number,
 ): "gift" | "snowflake" | "cloud" | "flower" => {
@@ -39,7 +42,6 @@ export const SEGMENTS: Segment[] = NAMES.map((name, i) => ({
   color: PALETTE[i % PALETTE.length],
   iconType: getIconType(i),
 }));
-
 
 export type DecoLoop =
   | { type: "rotate"; from: number; to: number; duration: number }
@@ -65,7 +67,8 @@ export const DECORATIONS: DecorationConfig[] = [
   {
     src: "/images/gingerman.png",
     alt: "gingerbread man icon",
-    className: "absolute top-14 left-100 size-10 -rotate-24 opacity-50 hidden 2xl:block",
+    className:
+      "absolute top-14 left-100 size-10 -rotate-24 opacity-50 hidden 2xl:block",
     delay: 0.12,
     loop: { type: "rotate", from: -24, to: -18, duration: 3.5 },
   },
@@ -108,7 +111,8 @@ export const DECORATIONS: DecorationConfig[] = [
   {
     src: "/images/gingerman.png",
     alt: "gingerbread man icon",
-    className: "absolute bottom-10 right-30 size-13 rotate-12 opacity-50 hidden lg:block",
+    className:
+      "absolute bottom-10 right-30 size-13 rotate-12 opacity-50 hidden lg:block",
     delay: 0.42,
     loop: { type: "rotate", from: 12, to: 18, duration: 3.8 },
   },
