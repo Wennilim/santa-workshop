@@ -149,3 +149,52 @@ export const PinHeartIcon = ({ className }: { className: string }) => {
     </svg>
   );
 };
+
+export const GiftIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect x="3" y="8" width="18" height="4" rx="1" />
+    <path d="M12 8v13" />
+    <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+    <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.9 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+  </svg>
+);
+
+export const SnowflakeIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <line x1="12" y1="2" x2="12" y2="22" />
+    <line x1="12" y1="2" x2="12" y2="22" transform="rotate(60 12 12)" />
+    <line x1="12" y1="2" x2="12" y2="22" transform="rotate(120 12 12)" />
+  </svg>
+);
+
+export const CloudIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path
+      d="M17.5,19c-0.3,0-0.5,0-0.8,0c-0.5-2.3-2.5-4-4.7-4c-1.6,0-3,0.9-3.9,2.2c-0.6-0.1-1.2-0.2-1.8-0.2c-2.4,0-4.3,1.9-4.3,4.3 c0,0.1,0,0.3,0,0.4C2.1,21.9,2.5,22,3,22h14.5c2.5,0,4.5-2,4.5-4.5S20,13,17.5,13z"
+      opacity="0.8"
+    />
+  </svg>
+);
+
+export const FlowerIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM12 22C10.9 22 10 21.1 10 20C10 18.9 10.9 18 12 18C13.1 18 14 18.9 14 20C14 21.1 13.1 22 12 22ZM2 12C2 10.9 2.9 10 4 10C5.1 10 6 10.9 6 12C6 13.1 5.1 14 4 14C2.9 14 2 13.1 2 12ZM22 12C22 13.1 21.1 14 20 14C18.9 14 18 13.1 18 12C18 10.9 18.9 10 20 10C21.1 10 22 10.9 22 12Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);

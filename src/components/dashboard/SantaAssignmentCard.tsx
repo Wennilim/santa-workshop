@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 export const SantaAssignmentCard = () => {
@@ -21,12 +22,14 @@ export const SantaAssignmentCard = () => {
           </p>
         </div>
 
-        <button className="bg-[#2d6a4f] mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit">
-          <img src="/icons/eye.svg" alt="eye icon" />
-          <p className="text-[14px] md:text-[16px] font-semibold">
-            Reveal My Recipient
-          </p>
-        </button>
+        <Link to="/spin">
+          <button className="bg-[#2d6a4f] mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit">
+            <img src="/icons/eye.svg" alt="eye icon" />
+            <p className="text-[14px] md:text-[16px] font-semibold">
+              Reveal My Recipient
+            </p>
+          </button>
+        </Link>
 
         <img
           src="/images/gifts.png"

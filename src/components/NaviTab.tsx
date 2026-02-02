@@ -13,9 +13,8 @@ const menu = [
 export const NaviTab = () => {
   const location = useLocation();
   const activeMenu =
-    menu.find((item) => item.link === location.pathname)?.id || 1;
+    menu.find((item) => item.link === location.pathname)?.id || 0;
   const [openDrawer, setOpenDrawer] = useState(false);
-
   return (
     <>
       {/* ✅ Desktop */}
@@ -23,11 +22,9 @@ export const NaviTab = () => {
         <div className="flex items-center justify-around gap-4 relative">
           {menu.map((item) => {
             const isActive = activeMenu === item.id;
-
             return (
-              <Link to={item.link}>
+              <Link to={item.link} key={item.id}>
                 <button
-                  key={item.id}
                   className={cn(
                     "relative px-4 py-2 rounded-full text-[16px] font-semibold cursor-pointer",
                     isActive

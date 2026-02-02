@@ -8,6 +8,7 @@
       "DynaPuff", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
   body {
+    background-color: #FFFCF5;
     font-family: var(--font-quicksand);
   }
 }
