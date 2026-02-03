@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SpinRouteImport } from './routes/spin'
+import { Route as RecipientWishlistRouteImport } from './routes/recipient-wishlist'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -23,6 +24,11 @@ const SpinRoute = SpinRouteImport.update({
   path: '/spin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecipientWishlistRoute = RecipientWishlistRouteImport.update({
+  id: '/recipient-wishlist',
+  path: '/recipient-wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/spin' | '/wishlist'
+  fullPaths: '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/spin' | '/wishlist'
-  id: '__root__' | '/' | '/spin' | '/wishlist'
+  to: '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  id: '__root__' | '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RecipientWishlistRoute: typeof RecipientWishlistRoute
   SpinRoute: typeof SpinRoute
   WishlistRoute: typeof WishlistRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpinRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recipient-wishlist': {
+      id: '/recipient-wishlist'
+      path: '/recipient-wishlist'
+      fullPath: '/recipient-wishlist'
+      preLoaderRoute: typeof RecipientWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RecipientWishlistRoute: RecipientWishlistRoute,
   SpinRoute: SpinRoute,
   WishlistRoute: WishlistRoute,
 }

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CloseIcon } from "../../assets/icons";
+import { useNavigate } from "@tanstack/react-router";
 
 export const WinningModal = ({
   isOpen,
@@ -10,6 +11,7 @@ export const WinningModal = ({
   setIsOpen: (isOpen: boolean) => void;
   winner: string | null;
 }) => {
+  const navigate = useNavigate();
   return (
     <AnimatePresence>
       {isOpen && (
@@ -18,7 +20,6 @@ export const WinningModal = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setIsOpen(false)}
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -35,6 +36,9 @@ export const WinningModal = ({
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                   setIsOpen(false);
+                  // store in API later on
+                  sessionStorage.setItem("winner", winner || "");
+                  navigate({ to: "/" });
                 }}
               >
                 <CloseIcon className="size-6" />

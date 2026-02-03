@@ -13,6 +13,7 @@ import { RoulettePointer } from "./RoulettePointer";
 import { RouletteSpinButton } from "./RouletteSpinButton";
 import { getTextColorClass } from "./utils/spin";
 import { WinningModal } from "./WinningModal";
+import { useGlobalStore } from "../../stores/useGlobalStore";
 
 const renderIcon = (segment: Segment, className: string) => {
   switch (segment.iconType) {
@@ -42,9 +43,10 @@ export const Roulette = ({
 }) => {
   const controls = useAnimation();
 
-  const [winner, setWinner] = useState<string | null>(null);
   const [rotation, setRotation] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+
+  const { winner, setWinner } = useGlobalStore();
 
   const normalize = (deg: number) => ((deg % 360) + 360) % 360;
 
