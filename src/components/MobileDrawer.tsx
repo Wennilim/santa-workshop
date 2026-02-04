@@ -123,6 +123,25 @@ export const MobileDrawer = ({
                       )}
 
                       <span className="relative z-10">{item.name}</span>
+                      {item.name === "Wishlist" &&
+                        sessionStorage.getItem("isLockWishlistSubmission") !==
+                          "true" && (
+                          <span className="absolute top-4 right-4 flex h-3 w-3">
+                            <motion.span
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [1, 0.4, 1],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                              className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
+                            />
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
+                          </span>
+                        )}
                     </button>
                   </Link>
                 );
