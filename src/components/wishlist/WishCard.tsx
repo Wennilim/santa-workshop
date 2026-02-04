@@ -1,4 +1,3 @@
-
 import { motion, type Variants } from "framer-motion";
 import { cn } from "../../utils/cn";
 
@@ -18,9 +17,15 @@ const itemVariants: Variants = {
 export const WishCard = ({
   index,
   color,
+  wishValue,
+  linkValue,
+  onUpdate,
 }: {
   index: number;
   color: string;
+  wishValue: string;
+  linkValue: string;
+  onUpdate: (index: number, field: "wish" | "link", value: string) => void;
 }) => {
   return (
     <motion.div
@@ -52,6 +57,8 @@ export const WishCard = ({
             className="w-full focus:outline-none text-[18px] font-semibold font-[dynapuff] placeholder:text-[14px] md:placeholder:text-[18px] bg-transparent"
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
+            value={wishValue}
+            onChange={(e) => onUpdate(index, "wish", e.target.value)}
           />
         </motion.div>
       </div>
@@ -74,6 +81,8 @@ export const WishCard = ({
             type="text"
             placeholder="Do you have a link ...?"
             className="w-full focus:outline-none text-[18px] font-semibold font-[dynapuff] placeholder:text-[14px] md:placeholder:text-[18px] bg-transparent"
+            value={linkValue}
+            onChange={(e) => onUpdate(index, "link", e.target.value)}
           />
         </motion.div>
       </div>

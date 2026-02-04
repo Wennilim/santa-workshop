@@ -7,6 +7,10 @@ import {
 import { PinHeartIcon } from "../assets/icons";
 import { DecorativeIcon } from "../components/wishlist/DecorativeIcon";
 import { WishCard } from "../components/wishlist/WishCard";
+import { useEffect, useState } from "react";
+import { SubmitWishlistModal } from "../components/wishlist/SubmitWishlistModal";
+import { useNavigate } from "@tanstack/react-router";
+import { cn } from "../utils/cn";
 
 const BG_COLORS = [
   "border-[#FF6B6B]/50 bg-[#FFD6D6]/50",
@@ -63,8 +67,12 @@ const DECORATIONS: DecorationData[] = [
   {
     src: "/images/candy-canes.png",
     alt: "candy canes",
-    className:
+    className: cn(
       "top-52 right-1 sm:top-52 sm:right-1 md:top-60 md:right-22 lg:top-76 lg:right-42 w-15",
+      sessionStorage.getItem("isLockWishlistSubmission") === "true"
+        ? "hidden"
+        : "block",
+    ),
     config: {
       initial: { opacity: 0, y: -50, scale: 0.5 },
       whileInView: { opacity: 1, y: 0, scale: 1 },
@@ -150,117 +158,199 @@ const itemVariants: Variants = {
 // --- Main Page Component ---
 
 export const WishListPage = () => {
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [wishlist, setWishlist] = useState(
+    BG_COLORS.map(() => ({ wish: "", link: "" })),
+  );
+  const navigate = useNavigate();
+
+  const handleWishUpdate = (
+    index: number,
+    field: "wish" | "link",
+    value: string,
+  ) => {
+    setWishlist((prev) => {
+      const newList = [...prev];
+      newList[index] = { ...newList[index], [field]: value };
+      return newList;
+    });
+  };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isSubmit) root.classList.add("overflow-hidden");
+    else root.classList.remove("overflow-hidden");
+
+    return () => root.classList.remove("overflow-hidden");
+  }, [isSubmit]);
+
+  const isDisabled = wishlist.some((item) => !item.wish);
+
   return (
-    <section
-      id="wishlist"
-      aria-label="Wishlist"
-      className="relative overflow-hidden"
-    >
-      {/* 标题区域 */}
-      <motion.div
-        className="flex flex-col items-center gap-6"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+    <>
+      <SubmitWishlistModal isOpen={isSubmit} setIsOpen={setIsSubmit} />
+      <section
+        id="wishlist"
+        aria-label="Wishlist"
+        className="relative overflow-hidden"
       >
-        <div className="flex justify-center gap-6 items-end pt-12 md:pt-6">
-          <motion.img
-            src="/images/tree2.png"
-            alt="Christmas tree"
-            className="lg:w-50 md:w-40 hidden md:block"
-            variants={itemVariants}
-            whileHover={{
-              scale: 1.1,
-              rotate: [-5, 5],
-              transition: { duration: 0.5 },
-            }}
-          />
+        {/* 标题区域 */}
 
-          <motion.h1
-            className="relative text-[40px] lg:text-[80px] sm:text-[60px] font-bold font-[dynapuff] text-[#2D6A4F] leading-none"
-            variants={itemVariants}
-          >
+        {sessionStorage.getItem("isLockWishlistSubmission") !== "true" ? (
+          <div className="relative overflow-hidden">
             <motion.div
-              initial={{ opacity: 0, y: -30, scale: 0 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 15,
-                delay: 0.5,
-              }}
-              whileHover={{
-                scale: 1.2,
-                rotate: [0, -10, 10, -5, 5, 0],
-                transition: { duration: 0.5 },
-              }}
-              className="absolute -top-6.5 left-0"
+              className="flex flex-col items-center gap-6"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
             >
-              <PinHeartIcon className="w-8 sm:w-12 text-[#E63946]" />
+              <div className="flex justify-center gap-6 items-end pt-12 md:pt-6">
+                <motion.img
+                  src="/images/tree2.png"
+                  alt="Christmas tree"
+                  className="lg:w-50 md:w-40 hidden md:block"
+                  variants={itemVariants}
+                  whileHover={{
+                    scale: 1.1,
+                    rotate: [-5, 5],
+                    transition: { duration: 0.5 },
+                  }}
+                />
+
+                <motion.h1
+                  className="relative text-[40px] lg:text-[80px] sm:text-[60px] font-bold font-[dynapuff] text-[#2D6A4F] leading-none"
+                  variants={itemVariants}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: -30, scale: 0 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 15,
+                      delay: 0.5,
+                    }}
+                    whileHover={{
+                      scale: 1.2,
+                      rotate: [0, -10, 10, -5, 5, 0],
+                      transition: { duration: 0.5 },
+                    }}
+                    className="absolute -top-6.5 left-0"
+                  >
+                    <PinHeartIcon className="w-8 sm:w-12 text-[#E63946]" />
+                  </motion.div>
+                  DEAR SANTA...
+                  <motion.img
+                    src="/images/gingerman.png"
+                    alt="gingerman"
+                    className="absolute -right-3 -top-6 lg:-top-3 rotate-4 lg:right-0 w-12 sm:w-16"
+                    initial={{ opacity: 0, x: 50, rotate: 0 }}
+                    animate={{ opacity: 1, x: 0, rotate: 4 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 200,
+                      delay: 0.6,
+                      duration: 0.8,
+                    }}
+                    whileHover={{
+                      scale: 1.2,
+                      rotate: [4, -10, 4],
+                      transition: { duration: 0.5 },
+                    }}
+                  />
+                </motion.h1>
+              </div>
+
+              <motion.p
+                className="text-center md:text-[24px] text-[18px] font-thin text-[#2D6A4F] max-w-100 md:max-w-137.5"
+                variants={itemVariants}
+              >
+                Time share your heart's desires for this year's Secret Santa!
+              </motion.p>
             </motion.div>
-            DEAR SANTA...
-            <motion.img
-              src="/images/gingerman.png"
-              alt="gingerman"
-              className="absolute -right-3 -top-6 lg:-top-3 rotate-4 lg:right-0 w-12 sm:w-16"
-              initial={{ opacity: 0, x: 50, rotate: 0 }}
-              animate={{ opacity: 1, x: 0, rotate: 4 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                delay: 0.6,
-                duration: 0.8,
-              }}
-              whileHover={{
-                scale: 1.2,
-                rotate: [4, -10, 4],
-                transition: { duration: 0.5 },
-              }}
+            <motion.div
+              className="flex flex-col items-center gap-12 lg:mx-48 md:mx-12 py-12"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={containerVariants}
+            >
+              {BG_COLORS.map((color, index) => (
+                <WishCard
+                  key={index}
+                  index={index}
+                  color={color}
+                  wishValue={wishlist[index].wish}
+                  linkValue={wishlist[index].link}
+                  onUpdate={handleWishUpdate}
+                />
+              ))}
+
+              <motion.button
+                className="bg-[#468CFF] cursor-pointer mt-6 md:mt-12 text-white uppercase font-bold md:text-[24px] text-[18px] font-[dynapuff] border-5 border-[#C1D9FF]/50 md:px-12 md:py-4 py-4 px-8 rounded-full shadow-lg disabled:bg-[#468CFF]/50 disabled:cursor-not-allowed"
+                variants={itemVariants}
+                whileHover={
+                  !isDisabled
+                    ? {
+                        scale: 1.05,
+                        boxShadow: "0 20px 40px rgba(70, 140, 255, 0.4)",
+                        y: -5,
+                      }
+                    : undefined
+                }
+                whileTap={!isDisabled ? { scale: 0.95 } : undefined}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                disabled={isDisabled}
+                onClick={() => {
+                  console.log("Submitting wishlist:", wishlist);
+                  setIsSubmit(true);
+                }}
+              >
+                send to santa
+              </motion.button>
+            </motion.div>{" "}
+          </div>
+        ) : (
+          <motion.div
+            className="flex flex-col items-center gap-12 lg:mx-48 md:mx-12 py-12"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={containerVariants}
+          >
+            <img
+              src="/images/santa-letter2.png"
+              alt="Santa letter collection"
+              className="size-[300px]"
             />
-          </motion.h1>
+            <p className="text-center md:text-[24px] text-[18px] font-bold font-[dynapuff] text-[#2D6A4F] max-w-100 md:max-w-137.5">
+              Your wishes has been sent to Santa successfully!
+            </p>
+            <motion.button
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 20px 40px rgba(70, 140, 255, 0.4)",
+                y: -5,
+              }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                navigate({ to: "/" });
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
+              className="mt-6 px-8 py-3 disabled:opacity-60 disabled:cursor-not-allowed bg-[#468CFF] text-white rounded-full font-bold font-[dynapuff] text-lg hover:bg-[#468CFF] cursor-pointer transition-colors shadow-lg"
+            >
+              Back to Dashboard
+            </motion.button>
+          </motion.div>
+        )}
+
+        {/* 浮动装饰元素 (z-20 provided by component, pointer-events-none on wrapper) */}
+        <div className="pointer-events-none">
+          {DECORATIONS.map((item, idx) => (
+            <DecorativeIcon key={idx} item={item} />
+          ))}
         </div>
-
-        <motion.p
-          className="text-center md:text-[24px] text-[18px] font-thin text-[#2D6A4F] max-w-100 md:max-w-137.5"
-          variants={itemVariants}
-        >
-          Time share your heart's desires for this year's Secret Santa!
-        </motion.p>
-      </motion.div>
-
-      {/* 愿望列表 */}
-      <motion.div
-        className="flex flex-col items-center gap-12 lg:mx-48 md:mx-12 py-12"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={containerVariants}
-      >
-        {BG_COLORS.map((color, index) => (
-          <WishCard key={index} index={index} color={color} />
-        ))}
-
-        <motion.button
-          className="bg-[#468CFF] cursor-pointer mt-6 md:mt-12 text-white uppercase font-bold md:text-[24px] text-[18px] font-[dynapuff] border-5 border-[#C1D9FF]/50 md:px-12 md:py-4 py-4 px-8 rounded-full shadow-lg"
-          variants={itemVariants}
-          whileHover={{
-            scale: 1.05,
-            boxShadow: "0 20px 40px rgba(70, 140, 255, 0.4)",
-            y: -5,
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        >
-          send to santa
-        </motion.button>
-      </motion.div>
-
-      {/* 浮动装饰元素 (z-20 provided by component, pointer-events-none on wrapper) */}
-      <div className="pointer-events-none">
-        {DECORATIONS.map((item, idx) => (
-          <DecorativeIcon key={idx} item={item} />
-        ))}
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
