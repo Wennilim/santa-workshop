@@ -38,7 +38,7 @@ export const WinningModal = ({
                   setIsOpen(false);
                   // store in API later on
                   sessionStorage.setItem("winner", winner || "");
-                  navigate({ to: "/" });
+                  navigate({ to: "/recipient-wishlist" });
                 }}
               >
                 <CloseIcon className="size-6" />

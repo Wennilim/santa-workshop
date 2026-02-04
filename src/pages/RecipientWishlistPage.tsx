@@ -20,7 +20,7 @@ const data = {
     {
       id: 3,
       name: "Proton Emas 7 PHEV",
-      link: "https://www.proton.com/",
+      link: "https://localhost:3000/proton.com/",
     },
   ],
 };
