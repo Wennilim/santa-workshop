@@ -32,7 +32,7 @@ export const WinningModal = ({
             <div className="flex items-center self-end absolute top-8 right-8">
               <motion.button
                 className="cursor-pointer hover:opacity-70 transition-opacity"
-                whileHover={{ scale: 1.1, rotate: 180 }}
+                whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                   setIsOpen(false);

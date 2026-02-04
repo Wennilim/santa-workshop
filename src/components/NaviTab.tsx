@@ -4,6 +4,7 @@ import { cn } from "../utils/cn";
 import { MobileDrawer } from "./MobileDrawer";
 import { LogoutIcon, MenuIcon } from "../assets/icons";
 import { Link, useLocation } from "@tanstack/react-router";
+import { LogoutModal } from "./dashboard/LogoutModal";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
@@ -15,8 +16,13 @@ export const NaviTab = () => {
   const activeMenu =
     menu.find((item) => item.link === location.pathname)?.id || 0;
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
   return (
     <>
+      <LogoutModal
+        isOpen={isOpenLogoutModal}
+        setIsOpen={setIsOpenLogoutModal}
+      />
       {/* ✅ Desktop */}
       <div className="hidden md:block bg-white rounded-full w-[320px] shadow-lg h-fit p-2">
         <div className="flex items-center justify-around gap-4 relative">
@@ -69,7 +75,10 @@ export const NaviTab = () => {
             );
           })}
 
-          <button className="ml-1 p-2 rounded-full transition-all duration-300 ease-in-out hover:bg-neutral-100">
+          <button
+            className="ml-1 p-2 rounded-full transition-all duration-300 ease-in-out hover:bg-neutral-100"
+            onClick={() => setIsOpenLogoutModal(true)}
+          >
             <LogoutIcon className="size-5 cursor-pointer transition-colors duration-200 ease-in-out hover:text-[#2D6A4F]" />
           </button>
         </div>
