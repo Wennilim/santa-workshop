@@ -7,8 +7,21 @@
     --font-dynapuff:
       "DynaPuff", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
+
+  html,
   body {
-    background-color: #FFFCF5;
+    background-color: #fffcf5;
     font-family: var(--font-quicksand);
+
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  ::-webkit-scrollbar {
+    display: none;
   }
 }
