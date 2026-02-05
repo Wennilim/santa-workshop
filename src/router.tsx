@@ -1,18 +1,15 @@
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import type { AuthContextValue } from "./auth/auth-types";
 
-export function createAppRouter(auth: AuthContextValue) {
-  return createRouter({
-    routeTree,
-    context: {
-      auth,
-    },
-  });
-}
+export const router = createRouter({
+  routeTree,
+  context: {
+    auth: undefined!, // We'll provide this at runtime
+  },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
-    router: ReturnType<typeof createAppRouter>;
+    router: typeof router;
   }
 }

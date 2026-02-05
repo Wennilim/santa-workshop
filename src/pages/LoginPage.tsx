@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useAuth } from "../auth/auth-context-core";
+import { router } from "../router";
 import { cn } from "../utils/cn";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 
@@ -68,8 +69,9 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const search = useSearch({ from: "/login" });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isClickLogin) {
       setIsClickLogin(true);
@@ -97,10 +99,30 @@ export const LoginPage = () => {
       return;
     }
 
-    // Clear error and proceed with login
+    // SIMULATED BACKEND CALL
+    setIsLoading(true);
     setError("");
-    login({ id: "1", name: "Santa" });
-    navigate({ to: search.redirect || "/" });
+
+    try {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Simple mock check
+      // In a real app, this would be an API call
+      if (email === "test@example.com" && password === "password123") {
+        login({ id: "1", name: "Santa" });
+        // CRITICAL: Invalidate the router to force it to re-read the auth context
+        await router.invalidate();
+        navigate({ to: search.redirect || "/" });
+      } else {
+        setError("Invalid email or password. Please try again.");
+        setPassword(""); // Clear password but keep email for convenience
+      }
+    } catch {
+      setError("Something went wrong. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isFormValid = email.trim() !== "" && password.length >= 6;
@@ -121,162 +143,182 @@ export const LoginPage = () => {
         />
 
         <div className="bg-[url('/images/bg4.png')]  bg-cover bg-center  sm:bg-white sm:bg-none relative z-10 shadow-2xl sm:rounded-[32px] overflow-x-hidden w-full h-dvh sm:h-auto sm:min-h-[570px] flex flex-col items-center justify-center px-6 py-8 sm:p-12">
-          <AnimatePresence mode="wait">
-            {isClickLogin ? (
-              <motion.img
-                key="logo2"
-                src="/icons/logo2.svg"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.05, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
-            ) : (
-              <motion.img
-                key="logo1"
-                src="/icons/logo1.svg"
-                initial={{ scale: 1.05, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
-            )}
-          </AnimatePresence>
-          <AnimatePresence mode="wait">
-            {isClickLogin ? (
-              <>
-                <motion.h1
-                  key="title1"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+          <form
+            onSubmit={handleLogin}
+            className="flex flex-col items-center justify-center w-full"
+          >
+            <AnimatePresence mode="wait">
+              {isClickLogin ? (
+                <motion.img
+                  key="logo2"
+                  src="/icons/logo2.svg"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 1.05, opacity: 0 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="font-bold text-[24px] sm:text-[32px] my-4"
-                >
-                  Welcome Back!
-                </motion.h1>
-              </>
-            ) : (
-              <>
-                <motion.h1
-                  key="title2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="font-bold text-[28px] sm:text-[32px] mt-4 text-[#1b4a35]"
-                >
-                  Santa Workshop
-                </motion.h1>
-                <motion.p
-                  key="subtitle2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="text-neutral-500 text-[14px]"
-                >
-                  Read to share some holiday magic?
-                </motion.p>
-              </>
-            )}
-          </AnimatePresence>
-          <AnimatePresence mode="wait">
-            {isClickLogin && (
-              <motion.div
-                key="login-form"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="flex flex-col w-full items-center justify-center gap-4 mt-2"
-              >
-                <motion.input
-                  variants={itemVariants}
-                  type="text"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setError("");
-                  }}
-                  className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#ff6b6b] bg-[#fdf2f8]"
                 />
-
-                <motion.div variants={itemVariants} className="relative w-full">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    value={password}
+              ) : (
+                <motion.img
+                  key="logo1"
+                  src="/icons/logo1.svg"
+                  initial={{ scale: 1.05, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                />
+              )}
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              {isClickLogin ? (
+                <>
+                  <motion.h1
+                    key="title1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="font-bold text-[24px] sm:text-[32px] my-4"
+                  >
+                    Welcome Back!
+                  </motion.h1>
+                </>
+              ) : (
+                <>
+                  <motion.h1
+                    key="title2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="font-bold text-[28px] sm:text-[32px] mt-4 text-[#1b4a35]"
+                  >
+                    Santa Workshop
+                  </motion.h1>
+                  <motion.p
+                    key="subtitle2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="text-neutral-500 text-[14px]"
+                  >
+                    Read to share some holiday magic?
+                  </motion.p>
+                </>
+              )}
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              {isClickLogin && (
+                <motion.div
+                  key="login-form"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex flex-col w-full items-center justify-center gap-4 mt-2"
+                >
+                  <motion.input
+                    variants={itemVariants}
+                    type="text"
+                    placeholder="Email"
+                    disabled={isLoading}
+                    value={email}
                     onChange={(e) => {
-                      setPassword(e.target.value);
+                      setEmail(e.target.value);
                       setError("");
                     }}
-                    className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#82b0fb] bg-[#e3f2fd]"
+                    className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#ff6b6b] bg-[#fdf2f8] disabled:opacity-50"
                   />
 
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                  <motion.div
+                    variants={itemVariants}
+                    className="relative w-full"
                   >
-                    <AnimatePresence mode="wait">
-                      {showPassword ? (
-                        <motion.img
-                          key="open-eye"
-                          src="/icons/open-eye.svg"
-                          alt="open eye icon"
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ duration: 0.15 }}
-                          className="w-5 h-5"
-                        />
-                      ) : (
-                        <motion.img
-                          key="close-eye"
-                          src="/icons/close-eye.svg"
-                          alt="close eye icon"
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ duration: 0.15 }}
-                          className="w-5 h-5"
-                        />
-                      )}
-                    </AnimatePresence>
-                  </button>
-                </motion.div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      disabled={isLoading}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setError("");
+                      }}
+                      className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#82b0fb] bg-[#e3f2fd] disabled:opacity-50"
+                    />
 
-                <AnimatePresence mode="wait">
-                  {error && (
-                    <motion.p
-                      key="error"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-red-500 text-sm text-center w-full"
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
                     >
-                      {error}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                      <AnimatePresence mode="wait">
+                        {showPassword ? (
+                          <motion.img
+                            key="open-eye"
+                            src="/icons/open-eye.svg"
+                            alt="open eye icon"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-5 h-5"
+                          />
+                        ) : (
+                          <motion.img
+                            key="close-eye"
+                            src="/icons/close-eye.svg"
+                            alt="close eye icon"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-5 h-5"
+                          />
+                        )}
+                      </AnimatePresence>
+                    </button>
+                  </motion.div>
 
-          <motion.button
-            variants={itemVariants}
-            whileHover={{ scale: isClickLogin && !isFormValid ? 1 : 1.04 }}
-            whileTap={{ scale: isClickLogin && !isFormValid ? 1 : 0.96 }}
-            onClick={handleLogin}
-            disabled={isClickLogin && !isFormValid}
-            className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 my-8 sm:my-12 bg-[#ff3b3f] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
-          >
-            <img src="/icons/lightning.svg" alt="lightning icon" />
-            <p className="font-bold">Login</p>
-          </motion.button>
+                  <AnimatePresence mode="wait">
+                    {error && (
+                      <motion.p
+                        key="error"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-red-500 text-sm text-center w-full"
+                      >
+                        {error}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.button
+              variants={itemVariants}
+              whileHover={{
+                scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 1.04,
+              }}
+              whileTap={{
+                scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 0.96,
+              }}
+              type="submit"
+              disabled={(isClickLogin && !isFormValid) || isLoading}
+              className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 my-8 sm:my-12 bg-[#ff3b3f] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+            >
+              {isLoading ? (
+                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <img src="/icons/lightning.svg" alt="lightning icon" />
+              )}
+              <p className="font-bold">
+                {isLoading ? "Logging in..." : "Login"}
+              </p>
+            </motion.button>
+          </form>
           <AnimatePresence>
             {!isClickLogin && (
               <motion.div
@@ -301,9 +343,9 @@ export const LoginPage = () => {
               </motion.div>
             )}
           </AnimatePresence>
-            <p className="text-neutral-400 text-xs sm:text-[14px] block sm:hidden absolute bottom-3 sm:bottom-5 px-4 text-center">
-          © 2026 Santa Workshop. All rights reserved.{" "}
-        </p>
+          <p className="text-neutral-400 text-xs sm:text-[14px] block sm:hidden absolute bottom-3 sm:bottom-5 px-4 text-center">
+            © 2026 Santa Workshop. All rights reserved.{" "}
+          </p>
         </div>
       </div>
       <p className="text-neutral-400 text-xs sm:text-[14px] hidden sm:block absolute bottom-3 sm:bottom-5 px-4 text-center">
