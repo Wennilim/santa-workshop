@@ -9,105 +9,88 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WishlistRouteImport } from './routes/wishlist'
-import { Route as SpinRouteImport } from './routes/spin'
-import { Route as RecipientWishlistRouteImport } from './routes/recipient-wishlist'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AuthedIndexRouteImport } from './routes/_authed.index'
+import { Route as AuthedWishlistRouteImport } from './routes/_authed.wishlist'
+import { Route as AuthedSpinRouteImport } from './routes/_authed.spin'
+import { Route as AuthedRecipientWishlistRouteImport } from './routes/_authed.recipient-wishlist'
 
-const WishlistRoute = WishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpinRoute = SpinRouteImport.update({
-  id: '/spin',
-  path: '/spin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecipientWishlistRoute = RecipientWishlistRouteImport.update({
-  id: '/recipient-wishlist',
-  path: '/recipient-wishlist',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedIndexRoute = AuthedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedWishlistRoute = AuthedWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedSpinRoute = AuthedSpinRouteImport.update({
+  id: '/spin',
+  path: '/spin',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedRecipientWishlistRoute = AuthedRecipientWishlistRouteImport.update({
+  id: '/recipient-wishlist',
+  path: '/recipient-wishlist',
+  getParentRoute: () => AuthedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthedIndexRoute
   '/login': typeof LoginRoute
-  '/recipient-wishlist': typeof RecipientWishlistRoute
-  '/spin': typeof SpinRoute
-  '/wishlist': typeof WishlistRoute
+  '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
+  '/spin': typeof AuthedSpinRoute
+  '/wishlist': typeof AuthedWishlistRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/recipient-wishlist': typeof RecipientWishlistRoute
-  '/spin': typeof SpinRoute
-  '/wishlist': typeof WishlistRoute
+  '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
+  '/spin': typeof AuthedSpinRoute
+  '/wishlist': typeof AuthedWishlistRoute
+  '/': typeof AuthedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
-  '/recipient-wishlist': typeof RecipientWishlistRoute
-  '/spin': typeof SpinRoute
-  '/wishlist': typeof WishlistRoute
+  '/_authed/recipient-wishlist': typeof AuthedRecipientWishlistRoute
+  '/_authed/spin': typeof AuthedSpinRoute
+  '/_authed/wishlist': typeof AuthedWishlistRoute
+  '/_authed/': typeof AuthedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/login' | '/recipient-wishlist' | '/spin' | '/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  to: '/login' | '/recipient-wishlist' | '/spin' | '/wishlist' | '/'
   id:
     | '__root__'
-    | '/'
+    | '/_authed'
     | '/login'
-    | '/recipient-wishlist'
-    | '/spin'
-    | '/wishlist'
+    | '/_authed/recipient-wishlist'
+    | '/_authed/spin'
+    | '/_authed/wishlist'
+    | '/_authed/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  RecipientWishlistRoute: typeof RecipientWishlistRoute
-  SpinRoute: typeof SpinRoute
-  WishlistRoute: typeof WishlistRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/wishlist': {
-      id: '/wishlist'
-      path: '/wishlist'
-      fullPath: '/wishlist'
-      preLoaderRoute: typeof WishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/spin': {
-      id: '/spin'
-      path: '/spin'
-      fullPath: '/spin'
-      preLoaderRoute: typeof SpinRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recipient-wishlist': {
-      id: '/recipient-wishlist'
-      path: '/recipient-wishlist'
-      fullPath: '/recipient-wishlist'
-      preLoaderRoute: typeof RecipientWishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -115,22 +98,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/': {
+      id: '/_authed/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthedIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/wishlist': {
+      id: '/_authed/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof AuthedWishlistRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/spin': {
+      id: '/_authed/spin'
+      path: '/spin'
+      fullPath: '/spin'
+      preLoaderRoute: typeof AuthedSpinRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/recipient-wishlist': {
+      id: '/_authed/recipient-wishlist'
+      path: '/recipient-wishlist'
+      fullPath: '/recipient-wishlist'
+      preLoaderRoute: typeof AuthedRecipientWishlistRouteImport
+      parentRoute: typeof AuthedRoute
     }
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedRecipientWishlistRoute: typeof AuthedRecipientWishlistRoute
+  AuthedSpinRoute: typeof AuthedSpinRoute
+  AuthedWishlistRoute: typeof AuthedWishlistRoute
+  AuthedIndexRoute: typeof AuthedIndexRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedRecipientWishlistRoute: AuthedRecipientWishlistRoute,
+  AuthedSpinRoute: AuthedSpinRoute,
+  AuthedWishlistRoute: AuthedWishlistRoute,
+  AuthedIndexRoute: AuthedIndexRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
   LoginRoute: LoginRoute,
-  RecipientWishlistRoute: RecipientWishlistRoute,
-  SpinRoute: SpinRoute,
-  WishlistRoute: WishlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
