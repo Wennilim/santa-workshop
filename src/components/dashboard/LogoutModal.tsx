@@ -1,5 +1,7 @@
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { CloseIcon } from "../../assets/icons";
+import { useAuth } from "../../auth/auth-context-core";
+import { useNavigate } from "@tanstack/react-router";
 
 const overlayVariants = {
   hidden: { opacity: 0 },
@@ -49,6 +51,9 @@ export const LogoutModal = ({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
@@ -110,8 +115,10 @@ export const LogoutModal = ({
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => {
+                logout();
                 setIsOpen(false);
                 sessionStorage.removeItem("isLogin");
+                navigate({ to: "/login" });
               }}
               className="mt-6 px-8 py-3 disabled:opacity-60 disabled:cursor-not-allowed bg-[#468CFF] text-white rounded-full font-medium font-[dynapuff] text-lg cursor-pointer transition-colors shadow-lg"
             >

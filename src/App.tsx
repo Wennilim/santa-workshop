@@ -1,13 +1,11 @@
 // import { LoginPage } from "./pages/LoginPage";
-import { DashboardPage } from "./pages/DashboardPage";
+import { RouterProvider } from "@tanstack/react-router";
+import { useAuth } from "./auth/auth-context-core";
+import { createAppRouter } from "./router";
 
 function App() {
-  return (
-    <>
-      {/* <LoginPage /> */}
-      <DashboardPage />
-    </>
-  );
+  const auth = useAuth();
+  return <RouterProvider router={createAppRouter(auth)} />;
 }
 
 export default App;

@@ -48,6 +48,9 @@ export const SantaAssignmentCard = () => {
         {hasRevealedSanta ? (
           <Link to="/recipient-wishlist">
             <motion.button
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               variants={itemVariants}
               whileHover={{
                 boxShadow: "0 20px 40px",
@@ -66,6 +69,9 @@ export const SantaAssignmentCard = () => {
         ) : (
           <Link to="/spin">
             <motion.button
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               variants={itemVariants}
               whileHover={{
                 boxShadow: "0 20px 40px",

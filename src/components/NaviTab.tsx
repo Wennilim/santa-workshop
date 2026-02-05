@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
 import { MobileDrawer } from "./MobileDrawer";
@@ -17,6 +17,14 @@ export const NaviTab = () => {
     menu.find((item) => item.link === location.pathname)?.id || 0;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isOpenLogoutModal) root.classList.add("overflow-hidden");
+    else root.classList.remove("overflow-hidden");
+
+    return () => root.classList.remove("overflow-hidden");
+  }, [isOpenLogoutModal]);
   return (
     <>
       <LogoutModal

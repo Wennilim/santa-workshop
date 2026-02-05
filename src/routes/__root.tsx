@@ -1,11 +1,27 @@
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRouteWithContext,
+  useLocation,
+} from "@tanstack/react-router";
 import { Header } from "../components/Header";
+import type { AuthContextValue } from "../auth/auth-types";
 
-export const Route = createRootRoute({
+interface MyRouterContext {
+  auth: AuthContextValue;
+}
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
 });
 
 function RootComponent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
+  if (isLoginPage) {
+    return <Outlet />;
+  }
+
   return (
     <div className="bg-[url('/images/bg2.png')] bg-cover bg-center bg-fixed min-h-screen w-full flex flex-col overflow-x-hidden max-w-[1540px] mx-auto">
       <Header />

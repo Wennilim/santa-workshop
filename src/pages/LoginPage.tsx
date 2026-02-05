@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useAuth } from "../auth/auth-context-core";
 import { cn } from "../utils/cn";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 
@@ -60,23 +62,65 @@ const features = [
 export const LoginPage = () => {
   const [isClickLogin, setIsClickLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const search = useSearch({ from: "/login" });
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isClickLogin) {
+      setIsClickLogin(true);
+      return;
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      setError("Please enter your email");
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Validate password
+    if (!password) {
+      setError("Please enter your password");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    // Clear error and proceed with login
+    setError("");
+    login({ id: "1", name: "Santa" });
+    navigate({ to: search.redirect || "/" });
+  };
+
+  const isFormValid = email.trim() !== "" && password.length >= 6;
 
   return (
-    <div className="bg-[url('/images/bg.png')] bg-contain bg-center h-screen w-screen flex items-center justify-center relative">
-      <div className="relative z-0">
+    <div className="bg-[url('/images/bg.png')] bg-contain bg-center min-h-screen w-full flex items-center justify-center relative sm:mx-auto overflow-hidden">
+      <div className="relative z-0 w-full max-w-[470px]">
         <img
           src="/images/reindeer.png"
           alt="peeping reindeer"
           className={cn(
-            "absolute -top-14 right-2 -z-10 size-[90px] pointer-events-none",
+            "absolute -top-14 right-2 -z-10 size-[60px] sm:size-[90px] pointer-events-none",
             "transform-gpu will-change-transform",
             "transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-            "translate-y-3 rotate-0 scale-95",
+            "translate-y-1 rotate-0 scale-95 hidden sm:block",
             isClickLogin && "-translate-y-6 rotate-12 scale-100",
           )}
         />
 
-        <div className="bg-white relative z-10 shadow-2xl rounded-[32px] w-[470px] h-[570px] flex flex-col items-center justify-center p-12">
+        <div className="bg-[url('/images/bg4.png')]  bg-cover bg-center  sm:bg-white sm:bg-none relative z-10 shadow-2xl sm:rounded-[32px] overflow-x-hidden w-full h-dvh sm:h-auto sm:min-h-[570px] flex flex-col items-center justify-center px-6 py-8 sm:p-12">
           <AnimatePresence mode="wait">
             {isClickLogin ? (
               <motion.img
@@ -107,7 +151,7 @@ export const LoginPage = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="font-bold text-[32px] my-4"
+                  className="font-bold text-[24px] sm:text-[32px] my-4"
                 >
                   Welcome Back!
                 </motion.h1>
@@ -120,7 +164,7 @@ export const LoginPage = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="font-bold text-[32px] mt-4"
+                  className="font-bold text-[28px] sm:text-[32px] mt-4 text-[#1b4a35]"
                 >
                   Santa Workshop
                 </motion.h1>
@@ -151,6 +195,11 @@ export const LoginPage = () => {
                   variants={itemVariants}
                   type="text"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
                   className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#ff6b6b] bg-[#fdf2f8]"
                 />
 
@@ -158,6 +207,11 @@ export const LoginPage = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
                     className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#82b0fb] bg-[#e3f2fd]"
                   />
 
@@ -193,17 +247,36 @@ export const LoginPage = () => {
                     </AnimatePresence>
                   </button>
                 </motion.div>
+
+                <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.p
+                      key="error"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-red-500 text-sm text-center w-full"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <button
-            onClick={() => setIsClickLogin(true)}
-            className="flex justify-center cursor-pointer items-center gap-2 my-12 bg-[#ff3b3f] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+          <motion.button
+            variants={itemVariants}
+            whileHover={{ scale: isClickLogin && !isFormValid ? 1 : 1.04 }}
+            whileTap={{ scale: isClickLogin && !isFormValid ? 1 : 0.96 }}
+            onClick={handleLogin}
+            disabled={isClickLogin && !isFormValid}
+            className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 my-8 sm:my-12 bg-[#ff3b3f] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
           >
             <img src="/icons/lightning.svg" alt="lightning icon" />
             <p className="font-bold">Login</p>
-          </button>
+          </motion.button>
           <AnimatePresence>
             {!isClickLogin && (
               <motion.div
@@ -212,15 +285,15 @@ export const LoginPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex items-center justify-center gap-4"
+                className="flex items-center justify-center gap-2 sm:gap-4"
               >
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className={`flex flex-col p-4 items-center justify-center gap-2 w-[124px] h-[80px] rounded-[17px] ${feature.bgColor}`}
+                    className={`flex flex-col p-3 sm:p-4 items-center justify-center gap-2 w-[100px] sm:w-[124px] h-[70px] sm:h-[80px] rounded-[17px] ${feature.bgColor}`}
                   >
                     <img src={feature.icon} alt={feature.title} />
-                    <p className="font-semibold uppercase text-neutral-400">
+                    <p className="font-semibold uppercase text-neutral-400 text-xs sm:text-sm">
                       {feature.title}
                     </p>
                   </div>
@@ -228,9 +301,12 @@ export const LoginPage = () => {
               </motion.div>
             )}
           </AnimatePresence>
+            <p className="text-neutral-400 text-xs sm:text-[14px] block sm:hidden absolute bottom-3 sm:bottom-5 px-4 text-center">
+          © 2026 Santa Workshop. All rights reserved.{" "}
+        </p>
         </div>
       </div>
-      <p className="text-neutral-400 text-[14px] absolute bottom-5">
+      <p className="text-neutral-400 text-xs sm:text-[14px] hidden sm:block absolute bottom-3 sm:bottom-5 px-4 text-center">
         © 2026 Santa Workshop. All rights reserved.{" "}
       </p>
     </div>

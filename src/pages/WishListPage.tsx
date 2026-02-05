@@ -84,7 +84,12 @@ const DECORATIONS: DecorationData[] = [
   {
     src: "/images/candy-canes.png",
     alt: "candy canes",
-    className: "top-230 left-15 hidden lg:block w-15",
+    className: cn(
+      "top-230 left-15 w-15",
+      sessionStorage.getItem("isLockWishlistSubmission") === "true"
+        ? "hidden"
+        : "block",
+    ),
     config: {
       initial: { opacity: 0, x: -100 },
       whileInView: { opacity: 1, x: 0 },

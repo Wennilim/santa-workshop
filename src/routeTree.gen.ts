@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SpinRouteImport } from './routes/spin'
 import { Route as RecipientWishlistRouteImport } from './routes/recipient-wishlist'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -29,6 +30,11 @@ const RecipientWishlistRoute = RecipientWishlistRouteImport.update({
   path: '/recipient-wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/recipient-wishlist': typeof RecipientWishlistRoute
   '/spin': typeof SpinRoute
   '/wishlist': typeof WishlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  fullPaths: '/' | '/login' | '/recipient-wishlist' | '/spin' | '/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
-  id: '__root__' | '/' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  to: '/' | '/login' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/recipient-wishlist'
+    | '/spin'
+    | '/wishlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
   RecipientWishlistRoute: typeof RecipientWishlistRoute
   SpinRoute: typeof SpinRoute
   WishlistRoute: typeof WishlistRoute
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecipientWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
   RecipientWishlistRoute: RecipientWishlistRoute,
   SpinRoute: SpinRoute,
   WishlistRoute: WishlistRoute,
