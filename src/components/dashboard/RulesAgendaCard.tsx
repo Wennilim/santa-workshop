@@ -172,7 +172,7 @@ export const RulesAgendaCard = () => {
         <img
           src="/images/agenda-side.png"
           alt="agenda-side"
-          className="absolute right-10 size-[151px] bottom-10 hidden sm:block"
+          className="absolute right-10 size-[151px] lg:size-[100px] xl:size-[151px] bottom-10 hidden sm:block"
         />
       </div>
     </section>

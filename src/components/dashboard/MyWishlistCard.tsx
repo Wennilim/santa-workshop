@@ -55,7 +55,7 @@ export const MyWishlistCard = () => {
       id="my-wishlist"
       aria-label="My wishlist"
       className={cn(
-        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 md:px-12 md:py-16 mt-10 md:mt-6 flex flex-col h-full lg:w-[40%]",
+        "bg-[#FFD6D6] rounded-[50px] border-8 border-[#ffffff] shadow-lg p-6 xl:px-12 md:py-16 mt-10 md:mt-6 flex flex-col h-full lg:w-[40%]",
         newIdea.length > 0 ? "min-h-[600px]" : "min-h-[620px]",
       )}
     >
