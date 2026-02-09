@@ -1,4 +1,5 @@
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { LockIcon } from "../assets/icons";
 import { RecipientDecorations } from "../components/recipient/RecipientDecorations";
 import { WishlistCard } from "../components/recipient/WishlistCard";
@@ -27,6 +28,7 @@ const data = {
 
 export const RecipientWishlistPage = () => {
   const reduceMotion = useReducedMotion();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const page: Variants = {
     hidden: { opacity: 0 },
@@ -108,18 +110,50 @@ export const RecipientWishlistPage = () => {
           animate="visible"
           className="flex flex-col items-center"
         >
-          <motion.img
-            variants={fadeUp}
-            src="/images/santa-profile.png"
-            alt="Santa Profile"
-            className="size-[110px] sm:size-[130px] md:size-[160px] lg:size-[190px] z-10"
-            loading="eager"
-            whileHover={
-              reduceMotion
-                ? undefined
-                : { rotate: -1.5, scale: 1.02, transition: { duration: 0.25 } }
-            }
-          />
+          <div className="relative size-[110px] sm:size-[130px] md:size-[160px] lg:size-[190px] flex items-center justify-center">
+            <AnimatePresence>
+              {!isImageLoaded && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{
+                    opacity: [0.5, 0.8, 0.5],
+                  }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    opacity: {
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    },
+                    default: { duration: 0.4 },
+                  }}
+                  className="absolute inset-0 bg-[#C5BC9A]/20 rounded-full z-20"
+                />
+              )}
+            </AnimatePresence>
+            <motion.img
+              variants={fadeUp}
+              src="/images/santa-profile.png"
+              alt="Santa Profile"
+              className={cn(
+                "size-full z-10",
+                !isImageLoaded ? "invisible" : "visible",
+              )}
+              onLoad={() => setIsImageLoaded(true)}
+              loading="eager"
+              whileHover={
+                reduceMotion
+                  ? undefined
+                  : {
+                      rotate: -1.5,
+                      scale: 1.02,
+                      transition: { duration: 0.25 },
+                    }
+              }
+              initial="hidden"
+              animate={isImageLoaded ? "visible" : "hidden"}
+            />
+          </div>
 
           <motion.h1
             variants={fadeUp}
