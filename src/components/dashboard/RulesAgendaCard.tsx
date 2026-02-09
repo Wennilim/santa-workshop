@@ -85,7 +85,7 @@ const RulesBox = ({ icon, title, content }: TRulesBox) => {
         <h5 className="text-[#D97706] text-[14px] md:text-[16px] font-semibold">
           {title}
         </h5>
-        <p className="text-[18px] md:text-[24px] text-[#92400E] font-semibold flex gap-2">
+        <div className="text-[18px] md:text-[24px] text-[#92400E] font-semibold flex gap-2">
           {content === ""
             ? costumeColor.map((color, index) => (
                 <div
@@ -94,7 +94,7 @@ const RulesBox = ({ icon, title, content }: TRulesBox) => {
                 />
               ))
             : content}
-        </p>
+        </div>
       </div>
     </div>
   );

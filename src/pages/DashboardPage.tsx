@@ -50,7 +50,7 @@ export const DashboardPage = () => {
           Ho ho ho, Wen Ni!{" "}
         </h1>
         <p className="text-[18px] md:text-[24px] text-[#2d6a4f] mb-4 md:mb-0">
-          Your'e currently on the "Nice List". Let's get festive!
+          You're currently on the "Nice List". Let's get festive!
         </p>
 
         <motion.img
