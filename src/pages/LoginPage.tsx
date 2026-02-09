@@ -260,6 +260,7 @@ export const LoginPage = () => {
                     />
 
                     <button
+                      aria-label="Show password button"
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
@@ -267,6 +268,7 @@ export const LoginPage = () => {
                       <AnimatePresence mode="wait">
                         {showPassword ? (
                           <motion.img
+                            aria-label="Open eye icon"
                             key="open-eye"
                             src="/icons/open-eye.svg"
                             alt="open eye icon"
@@ -278,6 +280,7 @@ export const LoginPage = () => {
                           />
                         ) : (
                           <motion.img
+                            aria-label="Close eye icon"
                             key="close-eye"
                             src="/icons/close-eye.svg"
                             alt="close eye icon"
@@ -311,6 +314,7 @@ export const LoginPage = () => {
             </AnimatePresence>
 
             <motion.button
+              aria-label="Login button"
               variants={itemVariants}
               whileHover={{
                 scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 1.04,

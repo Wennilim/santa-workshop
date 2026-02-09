@@ -153,6 +153,7 @@ export const MobileDrawer = ({
 
             {/* Footer actions */}
             <button
+              aria-label="Logout mobile button"
               onClick={onLogout}
               className="mt-6 cursor-pointer flex items-center justify-center gap-2 rounded-2xl bg-[#ff3b3f] text-white py-3 font-bold shadow-[0_4px_10px_rgba(0,0,0,0.15)] active:scale-[0.98] transition"
             >

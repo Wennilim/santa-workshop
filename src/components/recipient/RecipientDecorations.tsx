@@ -41,7 +41,6 @@ const DECORATIONS: DecorationItem[] = [
     className: "absolute -top-30 left-170 size-6",
   },
 
-
   {
     src: "/images/candy-canes3.png",
     alt: "candy canes",

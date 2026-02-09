@@ -41,7 +41,9 @@ const AnimatedNumber = ({
   );
 };
 
-export const SnowGlobeCard = ({ title = "The Big Reveal in" }: SnowGlobeCardProps) => {
+export const SnowGlobeCard = ({
+  title = "The Big Reveal in",
+}: SnowGlobeCardProps) => {
   const pad2 = (n: number) => String(n).padStart(2, "0");
 
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -122,7 +124,11 @@ export const SnowGlobeCard = ({ title = "The Big Reveal in" }: SnowGlobeCardProp
             <motion.span
               aria-hidden
               animate={{ opacity: [0.35, 0.85, 0.35] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
               className="leading-none text-black/60 text-[clamp(14px,3.5vw,24px)]"
             >
               :
@@ -136,7 +142,11 @@ export const SnowGlobeCard = ({ title = "The Big Reveal in" }: SnowGlobeCardProp
             <motion.span
               aria-hidden
               animate={{ opacity: [0.35, 0.85, 0.35] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
               className="leading-none text-black/60 text-[clamp(14px,3.5vw,24px)]"
             >
               :

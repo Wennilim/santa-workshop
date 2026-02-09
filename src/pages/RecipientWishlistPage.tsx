@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import { LockIcon } from "../assets/icons";
 import { RecipientDecorations } from "../components/recipient/RecipientDecorations";
 import { WishlistCard } from "../components/recipient/WishlistCard";

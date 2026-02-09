@@ -86,6 +86,7 @@ export const NaviTab = () => {
           <button
             className="ml-1 p-2 rounded-full transition-all duration-300 ease-in-out hover:bg-neutral-100"
             onClick={() => setIsOpenLogoutModal(true)}
+            aria-label="Logout"
           >
             <LogoutIcon className="size-5 cursor-pointer transition-colors duration-200 ease-in-out hover:text-[#2D6A4F]" />
           </button>

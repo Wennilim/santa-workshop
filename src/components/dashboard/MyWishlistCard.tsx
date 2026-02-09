@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useRef, useState } from "react";
 import { DeleteIcon } from "../../assets/icons";
 import { cn } from "../../utils/cn";
@@ -69,6 +68,7 @@ export const MyWishlistCard = () => {
         {newIdea.length > 0 && (
           <div className="flex md:gap-2 mt-1">
             <button
+              aria-label="Edit Close button"
               className={cn(
                 "text-white font-[dynapuff] text-[18px] md:text-[29px] cursor-pointer",
                 "transition-colors duration-200",
@@ -86,6 +86,7 @@ export const MyWishlistCard = () => {
             </button>
             {isEdit && (
               <button
+                aria-label="Save button"
                 className={cn(
                   "text-white font-[dynapuff] text-[18px] md:text-[29px] cursor-pointer",
                   "transition-colors duration-200",
@@ -118,6 +119,7 @@ export const MyWishlistCard = () => {
                 {item.name}
               </span>
               <button
+                aria-label="Delete button"
                 onClick={() =>
                   setNewIdea(newIdea.filter((i) => i.id !== item.id))
                 }
@@ -152,6 +154,7 @@ export const MyWishlistCard = () => {
               onChange={(e) => setNewInput(e.target.value)}
             />
             <button
+              aria-label="Delete button"
               className={cn(
                 "cursor-pointer rounded-lg p-2.5 shadow-lg bg-[#FDF2F8]",
                 "hover:bg-[#FDF2F8]/80",
@@ -166,6 +169,7 @@ export const MyWishlistCard = () => {
               <DeleteIcon className="size-6 text-[#E63946]" />
             </button>
             <button
+              aria-label="Add button"
               onClick={() => {
                 setIsAdd(false);
                 setNewInput("");
@@ -192,6 +196,7 @@ export const MyWishlistCard = () => {
         )}
       </div>
       <button
+        aria-label="Add idea button"
         onClick={() => {
           setIsAdd(true);
           addIdeaRef.current?.scrollIntoView({
