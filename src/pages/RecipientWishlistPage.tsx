@@ -113,6 +113,7 @@ export const RecipientWishlistPage = () => {
             src="/images/santa-profile.png"
             alt="Santa Profile"
             className="size-[110px] sm:size-[130px] md:size-[160px] lg:size-[190px] z-10"
+            loading="eager"
             whileHover={
               reduceMotion
                 ? undefined

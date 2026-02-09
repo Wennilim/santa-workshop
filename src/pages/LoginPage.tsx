@@ -61,10 +61,16 @@ const features = [
 ];
 
 export const LoginPage = () => {
-  const [isClickLogin, setIsClickLogin] = useState(false);
+  const [isClickLogin, setIsClickLogin] = useState(
+    () => !!sessionStorage.getItem("login_email"),
+  );
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(
+    () => sessionStorage.getItem("login_email") || "",
+  );
+  const [password, setPassword] = useState(
+    () => sessionStorage.getItem("login_password") || "",
+  );
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -110,6 +116,9 @@ export const LoginPage = () => {
       // Simple mock check
       // In a real app, this would be an API call
       if (email === "test@example.com" && password === "password123") {
+        // Clear sessionStorage on successful login
+        sessionStorage.removeItem("login_email");
+        sessionStorage.removeItem("login_password");
         login({ id: "1", name: "Santa" });
         // CRITICAL: Invalidate the router to force it to re-read the auth context
         await router.invalidate();
@@ -224,7 +233,9 @@ export const LoginPage = () => {
                     disabled={isLoading}
                     value={email}
                     onChange={(e) => {
-                      setEmail(e.target.value);
+                      const value = e.target.value;
+                      setEmail(value);
+                      sessionStorage.setItem("login_email", value);
                       setError("");
                     }}
                     className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#ff6b6b] bg-[#fdf2f8] disabled:opacity-50"
@@ -240,7 +251,9 @@ export const LoginPage = () => {
                       disabled={isLoading}
                       value={password}
                       onChange={(e) => {
-                        setPassword(e.target.value);
+                        const value = e.target.value;
+                        setPassword(value);
+                        sessionStorage.setItem("login_password", value);
                         setError("");
                       }}
                       className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#82b0fb] bg-[#e3f2fd] disabled:opacity-50"
