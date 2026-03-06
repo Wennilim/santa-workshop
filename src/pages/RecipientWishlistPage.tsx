@@ -11,7 +11,10 @@ import { WishlistCard } from "../components/recipient/WishlistCard";
 import { cn } from "../utils/cn";
 
 const data = {
-  name: "Yuqi",
+  firstName: "Yu Qi",
+  lastName: "Ong",
+  department: "Frontend",
+  gender:"female",
   wishlist: [
     {
       id: 1,
@@ -171,7 +174,7 @@ export const RecipientWishlistPage = () => {
               "wrap-break-word",
             )}
           >
-            {data.name}
+            {data.lastName} {data.firstName}
           </motion.h1>
 
           <motion.div
@@ -198,7 +201,7 @@ export const RecipientWishlistPage = () => {
                 "tracking-wide",
               )}
             >
-              HIS / HER WISHLIST
+              {data.gender === "male" ? "HIS" : "HER"} WISHLIST
             </p>
             <motion.img
               src="/icons/pink-star.svg"
