@@ -63,9 +63,6 @@ const features = [
 ];
 
 export const LoginPage = () => {
-  // const [isClickLogin, setIsClickLogin] = useState(
-  //   () => !!sessionStorage.getItem("login_email"),
-  // );
   const { isClickLogin, setIsClickLogin } = useGlobalStore();
 
   const [showPassword, setShowPassword] = useState(false);
