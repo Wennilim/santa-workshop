@@ -11,8 +11,7 @@ import { WishlistCard } from "../components/recipient/WishlistCard";
 import { cn } from "../utils/cn";
 
 const data = {
-  firstName: "Yu Qi",
-  lastName: "Ong",
+  fullname: "Yu Qi Ong",
   department: "Frontend",
   gender:"female",
   wishlist: [
@@ -174,7 +173,7 @@ export const RecipientWishlistPage = () => {
               "wrap-break-word",
             )}
           >
-            {data.lastName} {data.firstName}
+            {data.fullname}
           </motion.h1>
 
           <motion.div
