@@ -133,7 +133,7 @@ export const LoginPage = () => {
 
       // Simple mock check
       // In a real app, this would be an API call
-      if (email === "test@example.com" && password === "password123") {
+      if (email === "test@atoz-software.tech" && password === "password123") {
         // Clear sessionStorage on successful login
         sessionStorage.removeItem("login_email");
         sessionStorage.removeItem("login_password");
@@ -329,6 +329,9 @@ export const LoginPage = () => {
                     <button
                       type="button"
                       className="text-[#92400E] font-bold text-[14px] cursor-pointer hover:underline"
+                      onClick={() => {
+                        navigate({ to: "/forgotPassword" });
+                      }}
                     >
                       Forgot password?
                     </button>
