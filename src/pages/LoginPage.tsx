@@ -4,6 +4,8 @@ import { useAuth } from "../auth/auth-context-core";
 import { router } from "../router";
 import { cn } from "../utils/cn";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { RememberMe } from "../components/login/RememberMe";
+import { useGlobalStore } from "../stores/useGlobalStore";
 
 const containerVariants: Variants = {
   hidden: {
@@ -61,16 +63,35 @@ const features = [
 ];
 
 export const LoginPage = () => {
-  const [isClickLogin, setIsClickLogin] = useState(
-    () => !!sessionStorage.getItem("login_email"),
-  );
+  // const [isClickLogin, setIsClickLogin] = useState(
+  //   () => !!sessionStorage.getItem("login_email"),
+  // );
+  const { isClickLogin, setIsClickLogin } = useGlobalStore();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(
-    () => sessionStorage.getItem("login_email") || "",
+  const [rememberMe, setRememberMe] = useState(
+    () => localStorage.getItem("remember_me") === "true",
   );
-  const [password, setPassword] = useState(
-    () => sessionStorage.getItem("login_password") || "",
-  );
+  const [email, setEmail] = useState(() => {
+    const sessionEmail = sessionStorage.getItem("login_email");
+    if (sessionEmail) return sessionEmail;
+
+    const isRemembered = localStorage.getItem("remember_me") === "true";
+    if (isRemembered) {
+      return localStorage.getItem("remembered_email") || "";
+    }
+    return "";
+  });
+  const [password, setPassword] = useState(() => {
+    const sessionPassword = sessionStorage.getItem("login_password");
+    if (sessionPassword) return sessionPassword;
+
+    const isRemembered = localStorage.getItem("remember_me") === "true";
+    if (isRemembered) {
+      return localStorage.getItem("remembered_password") || "";
+    }
+    return "";
+  });
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -85,13 +106,13 @@ export const LoginPage = () => {
     }
 
     // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@atoz-software\.tech$/;
     if (!email.trim()) {
       setError("Please enter your email");
       return;
     }
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+      setError("Email must be from atoz-software.tech domain");
       return;
     }
 
@@ -119,6 +140,18 @@ export const LoginPage = () => {
         // Clear sessionStorage on successful login
         sessionStorage.removeItem("login_email");
         sessionStorage.removeItem("login_password");
+
+        // Handle Remember Me
+        if (rememberMe) {
+          localStorage.setItem("remember_me", "true");
+          localStorage.setItem("remembered_email", email);
+          localStorage.setItem("remembered_password", password);
+        } else {
+          localStorage.removeItem("remember_me");
+          localStorage.removeItem("remembered_email");
+          localStorage.removeItem("remembered_password");
+        }
+
         login({ id: "1", name: "Santa" });
         // CRITICAL: Invalidate the router to force it to re-read the auth context
         await router.invalidate();
@@ -294,7 +327,15 @@ export const LoginPage = () => {
                       </AnimatePresence>
                     </button>
                   </motion.div>
-
+                  <div className="flex items-center justify-between w-full">
+                    <RememberMe checked={rememberMe} onChange={setRememberMe} />
+                    <button
+                      type="button"
+                      className="text-[#92400E] font-bold text-[14px] cursor-pointer hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                   <AnimatePresence mode="wait">
                     {error && (
                       <motion.p
@@ -324,17 +365,53 @@ export const LoginPage = () => {
               }}
               type="submit"
               disabled={(isClickLogin && !isFormValid) || isLoading}
-              className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 my-8 sm:my-12 bg-[#ff3b3f] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+              className={cn(
+                "flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 bg-[#F16266] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]",
+                {
+                  "my-4": !isClickLogin,
+                  "my-8 sm:mt-12 sm:mb-4 ": isClickLogin,
+                },
+              )}
             >
-              {isLoading ? (
+              {isLoading && (
                 <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <img src="/icons/lightning.svg" alt="lightning icon" />
               )}
               <p className="font-bold">
                 {isLoading ? "Logging in..." : "Login"}
               </p>
             </motion.button>
+            {isClickLogin && (
+              <p>
+                <button
+                  onClick={() => {
+                    setIsClickLogin(false);
+                    navigate({ to: "/register" });
+                  }}
+                  className="text-[#05370A] font-bold text-[14px] cursor-pointer hover:underline"
+                >
+                  Join us
+                </button>{" "}
+                for the Christmas party today!
+              </p>
+            )}
+            {!isClickLogin && (
+              <motion.button
+                aria-label="Register button"
+                variants={itemVariants}
+                whileHover={{
+                  scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 1.04,
+                }}
+                whileTap={{
+                  scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 0.96,
+                }}
+                type="button"
+                disabled={(isClickLogin && !isFormValid) || isLoading}
+                onClick={() => navigate({ to: "/register" })}
+                className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center mb-6 bg-[#5C7E6D] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+              >
+                <p className="font-bold">Register</p>
+              </motion.button>
+            )}
           </form>
           <AnimatePresence>
             {!isClickLogin && (

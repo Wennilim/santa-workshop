@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  createRootRouteWithContext,
-  useLocation,
-} from "@tanstack/react-router";
-import { Header } from "../components/Header";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import type { AuthContextValue } from "../auth/auth-types";
 
 interface MyRouterContext {
@@ -12,27 +7,26 @@ interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 });
 
 function RootComponent() {
-  const location = useLocation();
-  const isLoginPage = location.pathname === "/login";
+  return <Outlet />;
+}
 
-  if (isLoginPage) {
-    return <Outlet />;
-  }
-
+function NotFoundComponent() {
   return (
-    <div className="bg-[url('/images/bg2.png')] bg-cover bg-center bg-fixed min-h-screen w-full flex flex-col overflow-x-hidden max-w-[1540px] mx-auto">
-      <Header />
-      <div className="flex-1 px-4 md:px-8 lg:px-12">
-        <Outlet />
-      </div>
-      <footer className="text-center py-4">
-        <p className="text-sm text-gray-400">
-          &copy; 2026 Santa Workshop. All rights reserved.
-        </p>
-      </footer>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+      <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+      <p className="text-gray-600 mb-8">
+        Oops! The page you're looking for doesn't exist.
+      </p>
+      <a
+        href="/"
+        className="px-6 py-3 bg-[#F16266] text-white rounded-full font-bold hover:scale-105 transition-transform"
+      >
+        Go back home
+      </a>
     </div>
   );
 }

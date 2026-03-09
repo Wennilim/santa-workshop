@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AuthedIndexRouteImport } from './routes/_authed.index'
@@ -16,6 +17,11 @@ import { Route as AuthedWishlistRouteImport } from './routes/_authed.wishlist'
 import { Route as AuthedSpinRouteImport } from './routes/_authed.spin'
 import { Route as AuthedRecipientWishlistRouteImport } from './routes/_authed.recipient-wishlist'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -49,12 +55,14 @@ const AuthedRecipientWishlistRoute = AuthedRecipientWishlistRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/spin': typeof AuthedSpinRoute
   '/wishlist': typeof AuthedWishlistRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/spin': typeof AuthedSpinRoute
   '/wishlist': typeof AuthedWishlistRoute
@@ -64,6 +72,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_authed/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/_authed/spin': typeof AuthedSpinRoute
   '/_authed/wishlist': typeof AuthedWishlistRoute
@@ -71,13 +80,26 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/recipient-wishlist' | '/spin' | '/wishlist'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/recipient-wishlist'
+    | '/spin'
+    | '/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/recipient-wishlist' | '/spin' | '/wishlist' | '/'
+  to:
+    | '/login'
+    | '/register'
+    | '/recipient-wishlist'
+    | '/spin'
+    | '/wishlist'
+    | '/'
   id:
     | '__root__'
     | '/_authed'
     | '/login'
+    | '/register'
     | '/_authed/recipient-wishlist'
     | '/_authed/spin'
     | '/_authed/wishlist'
@@ -87,10 +109,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -156,6 +186,7 @@ const AuthedRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
