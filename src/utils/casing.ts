@@ -4,3 +4,9 @@ export const formatLabel = (key: string) => {
     .replace(/^./, str => str.toUpperCase()) // 首字母大写
     .trim();
 };
+
+export function keysToLowerCase<T extends Record<string, unknown>>(obj: T) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key.toLowerCase(), value])
+  );
+}

@@ -15,7 +15,10 @@ import {
 
 import { useGlobalStore } from "../stores/useGlobalStore";
 import { DEPARTMENTS, GENDERS } from "../constants/register";
-import { formatLabel } from "../utils/casing";
+import { formatLabel, keysToLowerCase } from "../utils/casing";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { postRegister, type TRequestBody } from "../api/postRegister";
+import { useMutation } from "@tanstack/react-query";
 
 // =============================
 // Validation Schema
@@ -68,7 +71,6 @@ const SuccessScreen = ({ email, onGoLogin }: SuccessScreenProps) => {
     >
       <div className="text-5xl">📧</div>
 
-
       {email && (
         <p className="text-neutral-700 font-medium">
           Activation link sent to:
@@ -103,6 +105,7 @@ export const RegisterPage = () => {
 
   const [status, setStatus] = useState<"idle" | "success">("idle");
   const [registeredEmail, setRegisteredEmail] = useState<string>();
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   const {
     register,
@@ -120,7 +123,23 @@ export const RegisterPage = () => {
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: async (data: RegisterFormValues) => {
+      const payload = keysToLowerCase(data);
+      const response = await postRegister(payload as TRequestBody);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setRegisteredEmail(data.email);
+      setStatus("success");
+    },
+    onError: (error) => {
+      console.error("Error registering user:", error);
+    },
+  });
+
   const onSubmit = async (data: RegisterFormValues) => {
+    registerMutation.mutate(data);
     console.log("Form data:", data);
 
     // Simulate API request
@@ -139,13 +158,13 @@ export const RegisterPage = () => {
     <div className="bg-[url('/images/bg.png')] bg-contain bg-center min-h-screen w-full flex items-center justify-center relative sm:mx-auto overflow-hidden">
       <div className="bg-white/90 backdrop-blur-sm shadow-2xl rounded-[32px] p-8 sm:p-12 max-w-[470px] w-full flex flex-col items-center gap-6">
         <h1 className="font-bold text-[32px] text-[#1b4a35]">
-          {status === "success"
-            ? "Check your Email !"
-            : "Join the Magic!"}
+          {status === "success" ? "Check your Email !" : "Join the Magic!"}
         </h1>
 
         <p className="text-neutral-500 text-center -mt-4">
-           {status === "success" ? 'Your account has been created successfully.':'Create your account for the Christmas party!'}
+          {status === "success"
+            ? "Your account has been created successfully."
+            : "Create your account for the Christmas party!"}
         </p>
 
         <AnimatePresence mode="wait">
@@ -161,14 +180,36 @@ export const RegisterPage = () => {
               className="w-full flex flex-col gap-4"
             >
               {/* Text Inputs */}
+
               {INPUT_FIELDS.map((field) => (
-                <div key={field.name} className="flex flex-col gap-1">
+                <div
+                  key={field.name}
+                  className="flex flex-col gap-1 relative w-full"
+                >
                   <input
                     {...register(field.name)}
-                    type={field.type}
+                    type={
+                      isShowPassword && field.type === "password"
+                        ? "text"
+                        : field.type
+                    }
                     placeholder={formatLabel(field.name)}
                     className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] bg-[#E8F5E9]"
                   />
+
+                  {field.type === "password" && (
+                    <button
+                      type="button"
+                      onClick={() => setIsShowPassword(!isShowPassword)}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                    >
+                      {isShowPassword ? (
+                        <EyeIcon className="w-5 h-5 text-[#1b4a35]" />
+                      ) : (
+                        <EyeOffIcon className="w-5 h-5 text-[#1b4a35]" />
+                      )}
+                    </button>
+                  )}
 
                   {errors[field.name] && (
                     <span className="text-red-500 text-xs px-4">

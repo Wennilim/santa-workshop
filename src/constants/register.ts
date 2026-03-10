@@ -10,6 +10,6 @@ export const DEPARTMENTS = [
 ];
 
 export const GENDERS = [
-  { value: "Male", label: "Male" },
-  { value: "Female", label: "Female" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
 ];
