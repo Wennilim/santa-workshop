@@ -5,6 +5,7 @@ import { MobileDrawer } from "./MobileDrawer";
 import { LogoutIcon, MenuIcon } from "../assets/icons";
 import { Link, useLocation } from "@tanstack/react-router";
 import { LogoutModal } from "./dashboard/LogoutModal";
+import { useAuth } from "../auth/auth-context-core";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
@@ -12,6 +13,7 @@ const menu = [
 ];
 
 export const NaviTab = () => {
+  const { logout } = useAuth();
   const location = useLocation();
   const activeMenu =
     menu.find((item) => item.link === location.pathname)?.id || 0;
@@ -110,7 +112,7 @@ export const NaviTab = () => {
         menu={menu}
         activeMenu={activeMenu}
         onChangeMenu={() => {}}
-        onLogout={() => console.log("logout")}
+        onLogout={() => logout()}
       />
     </>
   );
