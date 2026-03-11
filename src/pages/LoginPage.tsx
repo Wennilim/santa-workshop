@@ -69,15 +69,15 @@ export const LoginPage = () => {
   const auth = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(
-    () => localStorage.getItem("remember_me") === "true",
+    () => sessionStorage.getItem("remember_me") === "true",
   );
   const [email, setEmail] = useState(() => {
     const sessionEmail = sessionStorage.getItem("login_email");
     if (sessionEmail) return sessionEmail;
 
-    const isRemembered = localStorage.getItem("remember_me") === "true";
+    const isRemembered = sessionStorage.getItem("remember_me") === "true";
     if (isRemembered) {
-      return localStorage.getItem("remembered_email") || "";
+      return sessionStorage.getItem("remembered_email") || "";
     }
     return "";
   });
@@ -85,9 +85,9 @@ export const LoginPage = () => {
     const sessionPassword = sessionStorage.getItem("login_password");
     if (sessionPassword) return sessionPassword;
 
-    const isRemembered = localStorage.getItem("remember_me") === "true";
+    const isRemembered = sessionStorage.getItem("remember_me") === "true";
     if (isRemembered) {
-      return localStorage.getItem("remembered_password") || "";
+      return sessionStorage.getItem("remembered_password") || "";
     }
     return "";
   });
@@ -111,6 +111,20 @@ export const LoginPage = () => {
       };
     }) => {
       sessionStorage.setItem("accessToken", data.access_token);
+      
+      // Save credentials if Remember Me is checked, otherwise clear them
+      if (rememberMe) {
+        sessionStorage.setItem("remembered_email", email);
+        sessionStorage.setItem("remembered_password", password);
+      } else {
+        sessionStorage.removeItem("remembered_email");
+        sessionStorage.removeItem("remembered_password");
+      }
+
+      // Always clear the temporary typing state upon successful login
+      sessionStorage.removeItem("login_email");
+      sessionStorage.removeItem("login_password");
+
       auth.login({ id: data.user.id, name: data.user.fullName });
       // auth.login()
       // 等待 router 刷新状态
@@ -125,12 +139,13 @@ export const LoginPage = () => {
     },
   });
 
+  const handleRememberMeChange = (checked: boolean) => {
+    setRememberMe(checked);
+    sessionStorage.setItem("remember_me", checked.toString());
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isClickLogin) {
-      setIsClickLogin(true);
-      return;
-    }
 
     // Validate email
     const emailRegex = /^[^\s@]+@atoz-software\.tech$/;
@@ -317,7 +332,10 @@ export const LoginPage = () => {
                     </button>
                   </motion.div>
                   <div className="flex items-center justify-between w-full">
-                    <RememberMe checked={rememberMe} onChange={setRememberMe} />
+                    <RememberMe
+                      checked={rememberMe}
+                      onChange={handleRememberMeChange}
+                    />
                     <button
                       type="button"
                       className="text-[#92400E] font-bold text-[14px] cursor-pointer hover:underline"
@@ -357,7 +375,12 @@ export const LoginPage = () => {
                 scale:
                   (isClickLogin && !isFormValid) || login.isPending ? 1 : 0.96,
               }}
-              type="submit"
+              type={isClickLogin ? "submit" : "button"}
+              onClick={() => {
+                if (!isClickLogin) {
+                  setIsClickLogin(true);
+                }
+              }}
               disabled={(isClickLogin && !isFormValid) || login.isPending}
               className={cn(
                 "flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 bg-[#F16266] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]",
