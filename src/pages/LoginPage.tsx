@@ -111,7 +111,7 @@ export const LoginPage = () => {
       };
     }) => {
       sessionStorage.setItem("accessToken", data.access_token);
-      
+
       // Save credentials if Remember Me is checked, otherwise clear them
       if (rememberMe) {
         sessionStorage.setItem("remembered_email", email);
@@ -147,6 +147,12 @@ export const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 第一次点击 Login → 只展开表单
+    if (!isClickLogin) {
+      setIsClickLogin(true);
+      return;
+    }
+
     // Validate email
     const emailRegex = /^[^\s@]+@atoz-software\.tech$/;
     if (!email.trim()) {
@@ -172,6 +178,8 @@ export const LoginPage = () => {
   };
 
   const isFormValid = email.trim() !== "" && password.length >= 6;
+
+  console.log(isClickLogin);
 
   return (
     <div className="bg-[url('/images/bg.png')] bg-contain bg-center min-h-screen w-full flex items-center justify-center relative sm:mx-auto overflow-hidden">
@@ -375,12 +383,7 @@ export const LoginPage = () => {
                 scale:
                   (isClickLogin && !isFormValid) || login.isPending ? 1 : 0.96,
               }}
-              type={isClickLogin ? "submit" : "button"}
-              onClick={() => {
-                if (!isClickLogin) {
-                  setIsClickLogin(true);
-                }
-              }}
+              type="submit"
               disabled={(isClickLogin && !isFormValid) || login.isPending}
               className={cn(
                 "flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 bg-[#F16266] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]",
