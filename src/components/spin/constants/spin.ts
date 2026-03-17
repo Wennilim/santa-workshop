@@ -1,4 +1,5 @@
-const PALETTE = ["#FEF9E7", "#D34549", "#E0F2E9", "#FEF9E7", "#3D6B53"];
+
+export const PALETTE = ["#FEF9E7", "#D34549", "#E0F2E9", "#FEF9E7", "#3D6B53"];
 
 export interface Segment {
   name: string;

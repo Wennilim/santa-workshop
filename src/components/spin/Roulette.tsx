@@ -1,19 +1,27 @@
+import { useQuery } from "@tanstack/react-query";
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { getUserList } from "../../api/getUserList";
 import {
-  GiftIcon,
-  SnowflakeIcon,
   CloudIcon,
   FlowerIcon,
+  GiftIcon,
+  SnowflakeIcon,
 } from "../../assets/icons";
-import { NAMES, SEGMENTS } from "./constants/spin";
+import { useGlobalStore } from "../../stores/useGlobalStore";
 import type { Segment } from "./constants/spin";
+import { getIconType, PALETTE } from "./constants/spin";
+
 import { InfoCard } from "./InfoCard";
 import { RoulettePointer } from "./RoulettePointer";
 import { RouletteSpinButton } from "./RouletteSpinButton";
 import { getTextColorClass } from "./utils/spin";
 import { WinningModal } from "./WinningModal";
-import { useGlobalStore } from "../../stores/useGlobalStore";
+import { getRecipient } from "../../api/getRecipient";
+
+type TUser = {
+  fullname: string;
+};
 
 const renderIcon = (segment: Segment, className: string) => {
   switch (segment.iconType) {
@@ -30,8 +38,6 @@ const renderIcon = (segment: Segment, className: string) => {
   }
 };
 
-const NUM_SEGMENTS = SEGMENTS.length;
-const SEGMENT_ANGLE = 360 / NUM_SEGMENTS;
 const WHEEL_SIZE = 600;
 
 export const Roulette = ({
@@ -41,45 +47,93 @@ export const Roulette = ({
   isSpinning: boolean;
   setIsSpinning: (value: boolean) => void;
 }) => {
+  const getUserQuery = useQuery({
+    queryKey: ["users"],
+    queryFn: getUserList,
+  });
+
+  const NAMES = getUserQuery.data?.map((user: TUser) => user.fullname) || [];
+
+  const SEGMENTS: Segment[] = NAMES.map((name: string, i: number) => ({
+    name,
+    color: PALETTE[i % PALETTE.length],
+    iconType: getIconType(i),
+  }));
+
+  const numSegments = SEGMENTS.length;
+  const segmentAngle = numSegments > 0 ? 360 / numSegments : 0;
+
   const controls = useAnimation();
 
   const [rotation, setRotation] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+
+  const getRecipientQuery = useQuery({
+    queryKey: ["recipient"],
+    queryFn: getRecipient,
+    enabled: false,
+  });
 
   const { winner, setWinner } = useGlobalStore();
 
   const normalize = (deg: number) => ((deg % 360) + 360) % 360;
 
   const handleSpin = async () => {
-    if (isSpinning) return;
+    if (isSpinning || numSegments === 0) return;
 
     setIsSpinning(true);
     setWinner(null);
 
-    const winnerIndex = 1;
-    const targetAngle = winnerIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    try {
+      // 1️⃣ 调 API
+      const res = await getRecipientQuery.refetch();
+      const recipientName = res.data?.recipient_name;
 
-    const current = normalize(rotation);
-    const spins = 10;
+      if (!recipientName) {
+        throw new Error("Recipient not found");
+      }
 
-    const finalRotation = rotation + spins * 360 - current - targetAngle;
+      // 2️⃣ 找到 winner index
+      const winnerIndex = SEGMENTS.findIndex(
+        (seg) => seg.name === recipientName,
+      );
 
-    await controls.start({
-      rotate: finalRotation,
-      transition: {
-        duration: 4,
-        ease: [0.2, 0.8, 0.2, 1],
-      },
-    });
+      if (winnerIndex === -1) {
+        throw new Error("Recipient not in participant list");
+      }
 
-    setWinner(SEGMENTS[winnerIndex].name);
-    setRotation(finalRotation);
-    setIsOpen(true);
-    setIsSpinning(false);
+      // 3️⃣ 计算角度
+      const targetAngle = winnerIndex * segmentAngle + segmentAngle / 2;
+
+      const current = normalize(rotation);
+      const spins = 10;
+
+      const finalRotation = rotation + spins * 360 - current - targetAngle;
+
+      // 4️⃣ 转盘动画
+      await controls.start({
+        rotate: finalRotation,
+        transition: {
+          duration: 4,
+          ease: [0.2, 0.8, 0.2, 1],
+        },
+      });
+
+      // 5️⃣ 设置 winner
+      setWinner(res.data);
+      setRotation(finalRotation);
+      setIsOpen(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSpinning(false);
+    }
   };
 
   const backgroundGradient = useMemo(() => {
-    const total = NUM_SEGMENTS;
+    if (numSegments === 0) return "transparent";
+
+    const total = numSegments;
     const seg = 100 / total;
 
     const stops: string[] = [];
@@ -91,7 +145,7 @@ export const Roulette = ({
     }
 
     return `conic-gradient(${stops.join(", ")})`;
-  }, []);
+  }, [SEGMENTS, numSegments]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -103,7 +157,9 @@ export const Roulette = ({
 
   return (
     <div className="flex flex-col items-center justify-center md:min-h-screen font-sans overflow-hidden">
-      <WinningModal {...{ isOpen, setIsOpen, winner }} />
+      <WinningModal
+        {...{ isOpen, setIsOpen, winner: winner?.recipient_name }}
+      />
 
       <div className="relative -top-36 sm:-top-10 md:top-0 scale-50 sm:scale-75 md:scale-100">
         <RoulettePointer />
@@ -151,7 +207,7 @@ export const Roulette = ({
                 background: `
                   repeating-conic-gradient(
                     rgba(0,0,0,0.12) 0deg 0.25deg,
-                    rgba(0,0,0,0.00) 0.25deg ${SEGMENT_ANGLE}deg
+                    rgba(0,0,0,0.00) 0.25deg ${segmentAngle}deg
                   )
                 `,
                 mixBlendMode: "multiply",
@@ -161,7 +217,7 @@ export const Roulette = ({
 
             {/* --- 扇形内容 --- */}
             {SEGMENTS.map((segment, i) => {
-              const rotate = i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+              const rotate = i * segmentAngle + segmentAngle / 2;
 
               return (
                 <div

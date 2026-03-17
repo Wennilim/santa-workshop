@@ -7,6 +7,22 @@ export const serverAxiosParams = {
 
 export const serverAxiosInstance = axios.create(serverAxiosParams);
 
+serverAxiosInstance.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem("accessToken");
+
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 serverAxiosInstance.interceptors.response.use(
   (response) => {
     return response;

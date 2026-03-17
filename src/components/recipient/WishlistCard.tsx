@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "../../utils/cn";
 import { isValidLink } from "../../utils/isValidLink";
+import type { TWishlist } from "../../stores/useGlobalStore";
 
 const wishlistCardColor = [
   "border-[#FF6B6B]/40 bg-[#FFD6D6]/45",
@@ -12,14 +13,13 @@ const wishlistCardColor = [
 const wishlistCardIcon = ["/icons/w1.svg", "/icons/w2.svg", "/icons/w3.svg"];
 
 type Props = {
-  name: string;
-  link: string;
+  item: TWishlist;
   index: number;
 };
 
-export const WishlistCard = ({ name, link, index }: Props) => {
+export const WishlistCard = ({ item, index }: Props) => {
   const reduceMotion = useReducedMotion();
-  const isValid = isValidLink(link);
+  const isValid = isValidLink(item.link);
   const cardClassName = cn(
     "block h-full w-full",
     "p-5 sm:p-6",
@@ -48,7 +48,7 @@ export const WishlistCard = ({ name, link, index }: Props) => {
           "line-clamp-2 wrap-break-word",
         )}
       >
-        {name}
+        {item.name}
       </p>
 
       {isValid && (
@@ -80,7 +80,7 @@ export const WishlistCard = ({ name, link, index }: Props) => {
       whileTap={reduceMotion || !isValid ? undefined : { scale: 0.985 }}
     >
       {isValid ? (
-        <Link to={link} target="_blank" className={cardClassName}>
+        <Link to={item.link} target="_blank" className={cardClassName}>
           {content}
         </Link>
       ) : (

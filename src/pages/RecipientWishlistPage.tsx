@@ -1,41 +1,30 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   AnimatePresence,
   motion,
   useReducedMotion,
   type Variants,
 } from "framer-motion";
-import { LockIcon } from "../assets/icons";
+import { useState } from "react";
+import { getRecipient } from "../api/getRecipient";
+import { LockIcon, RefreshIcon } from "../assets/icons";
 import { RecipientDecorations } from "../components/recipient/RecipientDecorations";
 import { WishlistCard } from "../components/recipient/WishlistCard";
+import type { TWishlist } from "../stores/useGlobalStore";
 import { cn } from "../utils/cn";
-
-const data = {
-  fullname: "Yu Qi Ong",
-  department: "Frontend",
-  gender:"female",
-  wishlist: [
-    {
-      id: 1,
-      name: "Chengdu Round Ticket",
-      link: "https://www.malaysiaairlines.com/my/en/home.html",
-    },
-    {
-      id: 2,
-      name: "Mr PA Blind Box",
-      link: "https://www.kikagoods.com/collections/mr-pa-series?srsltid=AfmBOorgeeWwi9CuvYV4gmkt-4bO5UsBGRjBNIMR20V30-56DLNr2mKo",
-    },
-    {
-      id: 3,
-      name: "Proton Emas 7 PHEV",
-      link: "https://localhost:3000/proton.com/",
-    },
-  ],
-};
 
 export const RecipientWishlistPage = () => {
   const reduceMotion = useReducedMotion();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const getRecipientQuery = useQuery({
+    queryKey: ["recipient"],
+    queryFn: getRecipient,
+  });
+
+  const { data, isLoading, isError, refetch } = getRecipientQuery;
+
+  const wishlist = data?.wishlist ?? [];
 
   const page: Variants = {
     hidden: { opacity: 0 },
@@ -173,7 +162,7 @@ export const RecipientWishlistPage = () => {
               "wrap-break-word",
             )}
           >
-            {data.fullname}
+            {data?.recipient_name}
           </motion.h1>
 
           <motion.div
@@ -200,7 +189,7 @@ export const RecipientWishlistPage = () => {
                 "tracking-wide",
               )}
             >
-              {data.gender === "male" ? "HIS" : "HER"} WISHLIST
+              {data?.gender === "male" ? "HIS" : "HER"} WISHLIST
             </p>
             <motion.img
               src="/icons/pink-star.svg"
@@ -218,23 +207,72 @@ export const RecipientWishlistPage = () => {
           </motion.div>
         </motion.header>
 
-        {/* List */}
-        <motion.main
-          variants={listStagger}
-          initial="hidden"
-          animate="visible"
-          className={cn(
-            "mt-8 sm:mt-10 md:mt-12 w-full",
-            "grid grid-cols-1 lg:grid-cols-3",
-            "gap-4 sm:gap-5",
-          )}
-        >
-          {data.wishlist.map(({ id, name, link }, index) => (
-            <motion.div key={id} variants={fadeUp}>
-              <WishlistCard name={name} link={link} index={index} />
+        {/* Content Section */}
+        <div className="mt-8 sm:mt-10 md:mt-12 w-full min-h-[300px] flex flex-col items-center">
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 w-full">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-32 rounded-2xl bg-[#C5BC9A]/20 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : isError ? (
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col items-center gap-4 py-8"
+            >
+              <div className="bg-[#FFD6D6] p-4 rounded-full">
+                <RefreshIcon className="size-8 text-[#E63946]" />
+              </div>
+              <p className="text-center font-bold font-[dynapuff] text-[#613E0F] text-lg">
+                Oops! Failed to load wishlist
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="bg-[#2D6A4F] text-white px-6 py-2 rounded-full font-bold hover:scale-105 transition-transform"
+              >
+                Try Again
+              </button>
             </motion.div>
-          ))}
-        </motion.main>
+          ) : wishlist.length === 0 ? (
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col items-center gap-4 py-12"
+            >
+              <img
+                src="/icons/gift-gray.svg"
+                alt="Empty"
+                className="size-16 opacity-30"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+              <p className="text-center font-semibold text-[#613E0F]/60 text-lg sm:text-xl">
+                This recipient hasn't added any wishes yet!
+              </p>
+            </motion.div>
+          ) : (
+            <motion.main
+              variants={listStagger}
+              initial="hidden"
+              animate="visible"
+              className={cn(
+                "w-full grid grid-cols-1 lg:grid-cols-3",
+                "gap-4 sm:gap-5",
+              )}
+            >
+              {wishlist.map((item: TWishlist, index: number) => (
+                <motion.div key={item.id} variants={fadeUp}>
+                  <WishlistCard {...{ item, index }} />
+                </motion.div>
+              ))}
+            </motion.main>
+          )}
+        </div>
 
         {/* Footer */}
         <motion.footer

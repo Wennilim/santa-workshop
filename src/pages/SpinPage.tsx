@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { DECORATIONS, NAMES } from "../components/spin/constants/spin";
+import { useState } from "react";
+import { getUserList } from "../api/getUserList";
+import { DECORATIONS } from "../components/spin/constants/spin";
 import { InfoCard } from "../components/spin/InfoCard";
 import { Roulette } from "../components/spin/Roulette";
 import { getLoopAnimation } from "../components/spin/utils/spin";
-import { useState } from "react";
 
 const pageVariants: Variants = {
   hidden: { opacity: 0 },
@@ -35,6 +37,13 @@ const decoEnterVariants = (delay = 0): Variants => ({
 export const SpinPage = () => {
   const reduceMotion = useReducedMotion();
   const [isSpinning, setIsSpinning] = useState(false);
+  const getUserQuery = useQuery({
+    queryKey: ["users"],
+    queryFn: getUserList,
+  });
+
+  const NAMES =
+    getUserQuery.data?.map((user: { fullname: string }) => user.fullname) || [];
   return (
     <motion.section
       id="roulette-wheel"

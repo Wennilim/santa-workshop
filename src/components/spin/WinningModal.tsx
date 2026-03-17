@@ -9,7 +9,7 @@ export const WinningModal = ({
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  winner: string | null;
+  winner: string | undefined;
 }) => {
   const navigate = useNavigate();
   return (
