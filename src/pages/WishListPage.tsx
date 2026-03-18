@@ -11,6 +11,12 @@ import { useEffect, useState } from "react";
 import { SubmitWishlistModal } from "../components/wishlist/SubmitWishlistModal";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "../utils/cn";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  postWishlistToSanta,
+  type TRequestBody,
+} from "../api/postWishlistToSanta";
+import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
 
 const BG_COLORS = [
   "border-[#FF6B6B]/50 bg-[#FFD6D6]/50",
@@ -181,6 +187,20 @@ export const WishListPage = () => {
     });
   };
 
+  const getMySubmittedWishlistQuery = useQuery({
+    queryKey: ["my-submitted-wishlist"],
+    queryFn: () => getMySubmittedWishlist(),
+  });
+
+  const sendWishlistMutation = useMutation({
+    mutationFn: (body: TRequestBody) => postWishlistToSanta(body),
+    onSuccess: () => {
+      setIsSubmit(true);
+    },
+  });
+
+  const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
+
   useEffect(() => {
     const root = document.documentElement;
     if (isSubmit) root.classList.add("overflow-hidden");
@@ -201,7 +221,7 @@ export const WishListPage = () => {
       >
         {/* 标题区域 */}
 
-        {sessionStorage.getItem("isLockWishlistSubmission") !== "true" ? (
+        {!hasSubmittedWishlist ? (
           <div className="relative overflow-hidden">
             <motion.div
               className="flex flex-col items-center gap-6"
@@ -306,10 +326,7 @@ export const WishListPage = () => {
                 whileTap={!isDisabled ? { scale: 0.95 } : undefined}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 disabled={isDisabled}
-                onClick={() => {
-                  console.log("Submitting wishlist:", wishlist);
-                  setIsSubmit(true);
-                }}
+                onClick={() => sendWishlistMutation.mutate({ items: wishlist })}
               >
                 send to santa
               </motion.button>

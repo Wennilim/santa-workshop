@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { CloseIcon, LogoutIcon } from "../assets/icons";
 import { cn } from "../utils/cn";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
 
 type MenuItem = {
   id: number;
@@ -27,6 +29,12 @@ export const MobileDrawer = ({
   onChangeMenu,
   onLogout,
 }: MobileDrawerProps) => {
+  const getMySubmittedWishlistQuery = useQuery({
+    queryKey: ["my-submitted-wishlist"],
+    queryFn: () => getMySubmittedWishlist(),
+  });
+
+  const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
   // ESC 关闭 + 锁背景滚动
   useEffect(() => {
     if (!open) return;
@@ -123,25 +131,23 @@ export const MobileDrawer = ({
                       )}
 
                       <span className="relative z-10">{item.name}</span>
-                      {item.name === "Wishlist" &&
-                        sessionStorage.getItem("isLockWishlistSubmission") !==
-                          "true" && (
-                          <span className="absolute top-4 right-4 flex h-3 w-3">
-                            <motion.span
-                              animate={{
-                                scale: [1, 1.5, 1],
-                                opacity: [1, 0.4, 1],
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                              }}
-                              className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
-                            />
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
-                          </span>
-                        )}
+                      {item.name === "Wishlist" && !hasSubmittedWishlist && (
+                        <span className="absolute top-4 right-4 flex h-3 w-3">
+                          <motion.span
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [1, 0.4, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
+                          />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
+                        </span>
+                      )}
                     </button>
                   </Link>
                 );
