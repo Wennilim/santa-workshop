@@ -19,6 +19,8 @@ interface GlobalStore {
   setWinner: (winner: TRecipient | null) => void;
   isClickLogin: boolean;
   setIsClickLogin: (isClickLogin: boolean) => void;
+  isAuthError: boolean;
+  setIsAuthError: (isAuthError: boolean) => void;
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
@@ -26,4 +28,6 @@ export const useGlobalStore = create<GlobalStore>((set) => ({
   setWinner: (winner: TRecipient | null) => set({ winner }),
   isClickLogin: false,
   setIsClickLogin: (isClickLogin: boolean) => set({ isClickLogin }),
+  isAuthError: false,
+  setIsAuthError: (isAuthError: boolean) => set({ isAuthError }),
 }));

@@ -1,5 +1,6 @@
 import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import axios from "axios";
+import { useGlobalStore } from "../stores/useGlobalStore";
 
 export const serverAxiosParams = {
   baseURL: import.meta.env.VITE_API_URL,
@@ -30,7 +31,11 @@ serverAxiosInstance.interceptors.response.use(
   (error) => {
     const res = error.response;
 
-    if (res.status === 500) {
+    if (res && res.status === 401) {
+      useGlobalStore.getState().setIsAuthError(true);
+    }
+
+    if (res && res.status === 500) {
       return Promise.reject(error);
     }
 

@@ -42,7 +42,7 @@ const AnimatedNumber = ({
 };
 
 export const SnowGlobeCard = ({
-  title = "The Big Reveal in",
+  title = "Party Starts in",
 }: SnowGlobeCardProps) => {
   const pad2 = (n: number) => String(n).padStart(2, "0");
 
