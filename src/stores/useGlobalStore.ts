@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export type TWishlist = {
   id: number;
-  name: string;
+  wish: string;
   link: string;
 };
 

@@ -48,7 +48,7 @@ export const WishlistCard = ({ item, index }: Props) => {
           "line-clamp-2 wrap-break-word",
         )}
       >
-        {item.name}
+        {item.wish}
       </p>
 
       {isValid && (
@@ -62,7 +62,7 @@ export const WishlistCard = ({ item, index }: Props) => {
   return (
     <motion.div
       className={cn(
-        "group rounded-[28px] sm:rounded-[32px]",
+        "group rounded-[28px] sm:rounded-[32px] h-full",
         "border-4 shadow-md",
         "overflow-hidden",
         wishlistCardColor[index],

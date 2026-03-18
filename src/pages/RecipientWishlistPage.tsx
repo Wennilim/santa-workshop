@@ -243,16 +243,16 @@ export const RecipientWishlistPage = () => {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="flex flex-col items-center gap-4 py-12"
+              className="flex flex-col items-center gap-4 bg-amber-50/50 rounded-2xl px-12 py-12"
             >
               <img
-                src="/icons/gift-gray.svg"
+                src="/images/buddha.png"
                 alt="Empty"
-                className="size-16 opacity-30"
+                className="size-32"
                 onError={(e) => (e.currentTarget.style.display = "none")}
               />
               <p className="text-center font-semibold text-[#613E0F]/60 text-lg sm:text-xl">
-                This recipient hasn't added any wishes yet!
+                No wishes. No desires. Just vibes.
               </p>
             </motion.div>
           ) : (
