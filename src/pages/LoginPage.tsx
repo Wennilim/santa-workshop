@@ -179,8 +179,6 @@ export const LoginPage = () => {
 
   const isFormValid = email.trim() !== "" && password.length >= 6;
 
-  console.log(isClickLogin);
-
   return (
     <div className="bg-[url('/images/bg.png')] bg-contain bg-center min-h-screen w-full flex items-center justify-center relative sm:mx-auto overflow-hidden">
       <div className="relative z-0 w-full max-w-[470px]">

@@ -1,9 +1,9 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { motion, type Variants } from "framer-motion";
-import { cn } from "../../utils/cn";
-import { getRevealStatus } from "../../api/getRevealStatus";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { motion, type Variants } from "framer-motion";
 import { getRecipient } from "../../api/getRecipient";
+import { getRevealStatus } from "../../api/getRevealStatus";
+import { cn } from "../../utils/cn";
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -66,11 +66,13 @@ export const SantaAssignmentCard = () => {
           )}
         </div>
         {hasRevealedSanta ? (
-          <Link to="/recipient-wishlist">
             <motion.button
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
+                navigate({ to: "/recipient-wishlist" });
               }}
+              initial="hidden"
+              animate="visible"
               variants={itemVariants}
               whileHover={{
                 boxShadow: "0 20px 40px",
@@ -85,9 +87,7 @@ export const SantaAssignmentCard = () => {
                 View HIS / HER Wishlist
               </p>
             </motion.button>
-          </Link>
         ) : (
-          // <Link to="/spin">
           <motion.button
             onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -95,6 +95,8 @@ export const SantaAssignmentCard = () => {
                 navigate({ to: "/spin" });
               }
             }}
+            initial="hidden"
+            animate="visible"
             variants={itemVariants}
             whileHover={{
               boxShadow: "0 20px 40px",
@@ -121,7 +123,6 @@ export const SantaAssignmentCard = () => {
               {hasSpinLaunched ? "Reveal My Recipient" : "Event not started."}
             </p>
           </motion.button>
-          // </Link>
         )}
 
         <img
