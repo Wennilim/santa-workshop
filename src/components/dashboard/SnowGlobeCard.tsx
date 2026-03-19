@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getRulesAgenda } from "../../api/getRulesAgenda";
 
 type SnowGlobeCardProps = {
   title?: string;
@@ -54,46 +56,54 @@ export const SnowGlobeCard = ({
 
   const [isChristmas, setIsChristmas] = useState(false);
 
-  const getTargetChristmas = (now: Date) => {
-    const thisYear = now.getFullYear();
-    const christmasThisYear = new Date(thisYear, 11, 24, 0, 0, 0);
-
-    if (now.getTime() > christmasThisYear.getTime()) {
-      return new Date(thisYear + 1, 11, 24, 0, 0, 0);
-    }
-
-    return christmasThisYear;
-  };
+  const getRulesAgendaQuery = useQuery({
+    queryKey: ["rules-agenda"],
+    queryFn: getRulesAgenda,
+  });
 
   useEffect(() => {
+    const dateStr = getRulesAgendaQuery.data?.date_event;
+    if (!dateStr) return;
+
+    const [, m, d] = dateStr.split("-");
+    const month = Number(m) - 1;
+    const day = Number(d);
+
+    if (isNaN(month) || isNaN(day)) return;
+
+    const getTarget = (now: Date) => {
+      const thisYear = now.getFullYear();
+      const base = new Date(thisYear, month, day);
+
+      return now > base ? new Date(thisYear + 1, month, day) : base;
+    };
+
     const tick = () => {
       const now = new Date();
-      const target = getTargetChristmas(now);
+      const target = getTarget(now);
 
       const diff = target.getTime() - now.getTime();
 
-      const isXmas = diff <= 0;
-      setIsChristmas(isXmas);
-
-      if (isXmas) {
+      if (diff <= 0) {
+        setIsChristmas(true);
         setTimeLeft({ days: 0, hours: 0, minutes: 0 });
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-      );
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      setIsChristmas(false);
 
-      setTimeLeft({ days, hours, minutes });
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((diff / (1000 * 60)) % 60),
+      });
     };
 
     tick();
-    const id = setInterval(tick, 60 * 1000);
+    const id = setInterval(tick, 60000);
 
     return () => clearInterval(id);
-  }, []);
+  }, [getRulesAgendaQuery.data?.date_event]);
 
   const daysText = pad2(timeLeft.days);
   const hoursText = pad2(timeLeft.hours);

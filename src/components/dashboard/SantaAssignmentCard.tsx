@@ -53,7 +53,7 @@ export const SantaAssignmentCard = () => {
           {hasRevealedSanta ? (
             <p className="text-[16px] sm:text-[18px] md:text-[22px] text-[#2d6a4f] max-w-[480px] lg:max-w-[500px] text-center sm:text-left">
               You have been matched with &nbsp;
-              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[32px]">
+              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[28px]">
                 {hasRevealedSanta}
               </span>
               &nbsp; for this Christmas gift exchange.
