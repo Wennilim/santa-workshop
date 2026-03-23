@@ -2,7 +2,7 @@ import React from "react";
 import type { User, AuthContextValue } from "./auth-types";
 import { AuthContext } from "./auth-context-core";
 
-const AUTH_STORAGE_KEY = "auth_user";
+export const AUTH_STORAGE_KEY = "auth_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(() => {
@@ -11,6 +11,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   const login = (u: User) => {
+    console.log(u)
     sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(u));
     setUser(u);
   };

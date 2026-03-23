@@ -34,7 +34,7 @@ export const SantaAssignmentCard = () => {
     enabled: hasSpinLaunched,
   });
 
-  const hasRevealedSanta = getRecipientQuery?.data?.recipient_name;
+  const hasRevealedSanta = getRecipientQuery?.data?.recipient_nickname;
 
   return (
     <div className="bg-[#D8F3DC] rounded-[50px] border-8 border-white shadow-lg p-8 md:p-12 relative w-full">
@@ -53,7 +53,10 @@ export const SantaAssignmentCard = () => {
           {hasRevealedSanta ? (
             <p className="text-[16px] sm:text-[18px] md:text-[22px] text-[#2d6a4f] max-w-[480px] lg:max-w-[500px] text-center sm:text-left">
               You have been matched with &nbsp;
-              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[28px]">
+              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[28px] uppercase">
+                {getRecipientQuery?.data?.recipient_gender === "male"
+                  ? "Mr."
+                  : "Ms."}{" "}
                 {hasRevealedSanta}
               </span>
               &nbsp; for this Christmas gift exchange.
@@ -66,27 +69,27 @@ export const SantaAssignmentCard = () => {
           )}
         </div>
         {hasRevealedSanta ? (
-            <motion.button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                navigate({ to: "/recipient-wishlist" });
-              }}
-              initial="hidden"
-              animate="visible"
-              variants={itemVariants}
-              whileHover={{
-                boxShadow: "0 20px 40px",
-                y: -5,
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="bg-[#2d6a4f] mt-8 lg:mt-5 xl:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
-            >
-              <img src="/icons/eye.svg" alt="eye icon" />
-              <p className="text-[14px] md:text-[16px] font-semibold">
-                View HIS / HER Wishlist
-              </p>
-            </motion.button>
+          <motion.button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              navigate({ to: "/recipient-wishlist" });
+            }}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+            whileHover={{
+              boxShadow: "0 20px 40px",
+              y: -5,
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="bg-[#2d6a4f] mt-8 lg:mt-5 xl:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
+          >
+            <img src="/icons/eye.svg" alt="eye icon" />
+            <p className="text-[14px] md:text-[16px] font-semibold">
+              View HIS / HER Wishlist
+            </p>
+          </motion.button>
         ) : (
           <motion.button
             onClick={() => {

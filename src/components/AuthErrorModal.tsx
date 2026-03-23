@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { useGlobalStore } from "../stores/useGlobalStore";
 import { useAuth } from "../auth/auth-context-core";
 import { useNavigate } from "@tanstack/react-router";
@@ -14,6 +15,16 @@ export const AuthErrorModal = () => {
     logout();
     navigate({ to: "/login" });
   };
+
+  useEffect(() => {
+    if (!isAuthError) return;
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isAuthError]);
 
   return (
     <AnimatePresence>

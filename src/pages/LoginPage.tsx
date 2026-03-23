@@ -105,7 +105,7 @@ export const LoginPage = () => {
       access_token: string;
       user: {
         id: string;
-        fullName: string;
+        fullname: string;
         gender: string;
         department: string;
       };
@@ -125,7 +125,7 @@ export const LoginPage = () => {
       sessionStorage.removeItem("login_email");
       sessionStorage.removeItem("login_password");
 
-      auth.login({ id: data.user.id, name: data.user.fullName });
+      auth.login({ id: data.user.id, name: data.user.fullname });
       // auth.login()
       // 等待 router 刷新状态
       // navigate() -> Router 确认你已经登录

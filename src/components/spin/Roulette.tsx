@@ -20,7 +20,7 @@ import { WinningModal } from "./WinningModal";
 import { getRecipient } from "../../api/getRecipient";
 
 type TUser = {
-  fullname: string;
+  nickName: string;
 };
 
 const renderIcon = (segment: Segment, className: string) => {
@@ -52,10 +52,10 @@ export const Roulette = ({
     queryFn: getUserList,
   });
 
-  const NAMES = getUserQuery.data?.map((user: TUser) => user.fullname) || [];
+  const NAMES = getUserQuery.data?.map((user: TUser) => user.nickName) || [];
 
   const SEGMENTS: Segment[] = NAMES.map((name: string, i: number) => ({
-    name,
+    name: name.toUpperCase(),
     color: PALETTE[i % PALETTE.length],
     iconType: getIconType(i),
   }));
@@ -87,7 +87,7 @@ export const Roulette = ({
     try {
       // 1️⃣ 调 API
       const res = await getRecipientQuery.refetch();
-      const recipientName = res.data?.recipient_name;
+      const recipientName = res.data?.recipient_nickname;
 
       if (!recipientName) {
         throw new Error("Recipient not found");
@@ -95,7 +95,7 @@ export const Roulette = ({
 
       // 2️⃣ 找到 winner index
       const winnerIndex = SEGMENTS.findIndex(
-        (seg) => seg.name === recipientName,
+        (seg) => seg.name.toLowerCase() === recipientName.toLowerCase(),
       );
 
       if (winnerIndex === -1) {
@@ -158,7 +158,7 @@ export const Roulette = ({
   return (
     <div className="flex flex-col items-center justify-center md:min-h-screen font-sans overflow-hidden">
       <WinningModal
-        {...{ isOpen, setIsOpen, winner: winner?.recipient_name }}
+        {...{ isOpen, setIsOpen, winner: winner?.recipient_nickname }}
       />
 
       <div className="relative -top-36 sm:-top-10 md:top-0 scale-50 sm:scale-75 md:scale-100">

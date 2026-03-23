@@ -162,12 +162,21 @@ export const RecipientWishlistPage = () => {
               "wrap-break-word",
             )}
           >
-            {data?.recipient_name}
+           {data?.recipient_gender === "male" ? "Mr." : "Ms."}  {data?.recipient_nickname}
           </motion.h1>
+          <p
+            className={cn(
+              "text-center font-bold font-[dynapuff] text-[#613E0F]",
+              "text-[16px] sm:text-[18px] md:text-[22px]",
+              "tracking-wide mt-6 mb-3",
+            )}
+          >
+            GIFT CODE: <span className="font-[quicksand]">{data?.recipient_giftCode}</span>
+          </p>
 
           <motion.div
             variants={fadeUp}
-            className="mt-5 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3"
+            className="mt-5 sm:mt-3 flex items-center justify-center gap-2 sm:gap-3"
           >
             <motion.img
               src="/icons/pink-star.svg"
@@ -189,7 +198,7 @@ export const RecipientWishlistPage = () => {
                 "tracking-wide",
               )}
             >
-              {data?.gender === "male" ? "HIS" : "HER"} WISHLIST
+              {data?.recipient_gender === "male" ? "HIS" : "HER"} WISHLIST
             </p>
             <motion.img
               src="/icons/pink-star.svg"
@@ -283,7 +292,7 @@ export const RecipientWishlistPage = () => {
         >
           <LockIcon className="size-4 text-[#C5BC9A]/60" />
           <p className="text-[13px] sm:text-[14px] md:text-[15px] font-semibold text-[#C5BC9A]/70 text-center tracking-wide">
-            PERSONAL MISSION: TOP SECRET
+            PERSONAL MISSION: KEEP IT SECRET
           </p>
         </motion.footer>
       </motion.div>

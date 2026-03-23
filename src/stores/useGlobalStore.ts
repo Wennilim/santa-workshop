@@ -8,9 +8,8 @@ export type TWishlist = {
 
 type TRecipient = {
   id: number;
-  recipient_name: string;
-  gender: string;
-  department: string;
+  recipient_nickname: string;
+  recipient_nicknameId: string;
   wishlist: Array<TWishlist> | null;
 };
 
