@@ -11,7 +11,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   const login = (u: User) => {
-    console.log(u)
     sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(u));
     setUser(u);
   };

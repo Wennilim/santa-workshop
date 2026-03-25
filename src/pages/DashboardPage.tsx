@@ -45,7 +45,7 @@ export const DashboardPage = () => {
   const getMyGiftCodeQuery = useQuery({
     queryKey: ["giftCode"],
     queryFn: getMyGiftCode,
-    enabled: isOpenRevealModal,
+    enabled: false,
   });
   const nickname = getMyGiftCodeQuery.data?.nickname;
   const giftCode = getMyGiftCodeQuery.data?.giftCode;
@@ -97,7 +97,10 @@ export const DashboardPage = () => {
             />
           </motion.div>
           <motion.button
-            onClick={() => setIsRevealModal(true)}
+            onClick={() => {
+              getMyGiftCodeQuery.refetch();
+              setIsRevealModal(true);
+            }}
             variants={fadeUp}
             initial="hidden"
             animate="visible"

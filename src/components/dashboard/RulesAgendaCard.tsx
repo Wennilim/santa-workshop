@@ -35,11 +35,11 @@ const RulesBox = ({ icon, title, content, costumeColor }: TRulesBox) => {
         <div className="text-[18px] md:text-[24px] text-[#92400E] font-semibold flex gap-2">
           {content === ""
             ? costumeColor?.map((color, index) => {
-                const bgColor = `bg-[${color}]`;
                 return (
                   <div
                     key={index}
-                    className={cn("size-7 lg:size-8 lg:mt-3 shadow-lg rounded-full", bgColor)}
+                    className={cn("size-7 lg:size-8 lg:mt-3 shadow-lg rounded-full")}
+                    style={{ backgroundColor: color }}
                   />
                 );
               })
