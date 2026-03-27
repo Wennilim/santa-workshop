@@ -35,7 +35,7 @@ export const MobileDrawer = ({
   });
 
   const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
-  // ESC 关闭 + 锁背景滚动
+  const hasSubmitFeedback = false;
   useEffect(() => {
     if (!open) return;
 
@@ -132,6 +132,24 @@ export const MobileDrawer = ({
 
                       <span className="relative z-10">{item.name}</span>
                       {item.name === "Wishlist" && !hasSubmittedWishlist && (
+                        <span className="absolute top-4 right-4 flex h-3 w-3">
+                          <motion.span
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [1, 0.4, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
+                          />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
+                        </span>
+                      )}
+
+                      {item.name === "Feedback" && !hasSubmitFeedback && (
                         <span className="absolute top-4 right-4 flex h-3 w-3">
                           <motion.span
                             animate={{

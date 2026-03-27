@@ -18,6 +18,7 @@ import { Route as AuthedWishlistRouteImport } from './routes/_authed.wishlist'
 import { Route as AuthedSpinRouteImport } from './routes/_authed.spin'
 import { Route as AuthedRecipientWishlistRouteImport } from './routes/_authed.recipient-wishlist'
 import { Route as AuthedGiftGivingGuideRouteImport } from './routes/_authed.gift-giving-guide'
+import { Route as AuthedFeedbackRouteImport } from './routes/_authed.feedback'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -63,12 +64,18 @@ const AuthedGiftGivingGuideRoute = AuthedGiftGivingGuideRouteImport.update({
   path: '/gift-giving-guide',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedFeedbackRoute = AuthedFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/feedback': typeof AuthedFeedbackRoute
   '/gift-giving-guide': typeof AuthedGiftGivingGuideRoute
   '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/spin': typeof AuthedSpinRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/feedback': typeof AuthedFeedbackRoute
   '/gift-giving-guide': typeof AuthedGiftGivingGuideRoute
   '/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/spin': typeof AuthedSpinRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/_authed/feedback': typeof AuthedFeedbackRoute
   '/_authed/gift-giving-guide': typeof AuthedGiftGivingGuideRoute
   '/_authed/recipient-wishlist': typeof AuthedRecipientWishlistRoute
   '/_authed/spin': typeof AuthedSpinRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/feedback'
     | '/gift-giving-guide'
     | '/recipient-wishlist'
     | '/spin'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/feedback'
     | '/gift-giving-guide'
     | '/recipient-wishlist'
     | '/spin'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/_authed/feedback'
     | '/_authed/gift-giving-guide'
     | '/_authed/recipient-wishlist'
     | '/_authed/spin'
@@ -202,10 +214,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedGiftGivingGuideRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/feedback': {
+      id: '/_authed/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof AuthedFeedbackRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
+  AuthedFeedbackRoute: typeof AuthedFeedbackRoute
   AuthedGiftGivingGuideRoute: typeof AuthedGiftGivingGuideRoute
   AuthedRecipientWishlistRoute: typeof AuthedRecipientWishlistRoute
   AuthedSpinRoute: typeof AuthedSpinRoute
@@ -214,6 +234,7 @@ interface AuthedRouteChildren {
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedFeedbackRoute: AuthedFeedbackRoute,
   AuthedGiftGivingGuideRoute: AuthedGiftGivingGuideRoute,
   AuthedRecipientWishlistRoute: AuthedRecipientWishlistRoute,
   AuthedSpinRoute: AuthedSpinRoute,

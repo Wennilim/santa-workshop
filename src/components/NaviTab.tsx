@@ -8,10 +8,12 @@ import { LogoutModal } from "./dashboard/LogoutModal";
 import { useAuth } from "../auth/auth-context-core";
 import { useQuery } from "@tanstack/react-query";
 import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
+import { RedDot } from "./RedDot";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
   { id: 2, name: "Wishlist", link: "/wishlist" },
+  { id: 3, name: "Feedback", link: "/feedback" },
 ];
 
 export const NaviTab = () => {
@@ -29,6 +31,8 @@ export const NaviTab = () => {
 
   const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
 
+  const hasSubmitFeedback = false;
+
   useEffect(() => {
     const root = document.documentElement;
     if (isOpenLogoutModal) root.classList.add("overflow-hidden");
@@ -43,7 +47,7 @@ export const NaviTab = () => {
         setIsOpen={setIsOpenLogoutModal}
       />
       {/* ✅ Desktop */}
-      <div className="hidden md:block bg-white rounded-full w-[320px] shadow-lg h-fit p-2">
+      <div className="hidden md:block bg-white rounded-full w-fit shadow-lg h-fit p-2">
         <div className="flex items-center justify-around gap-4 relative">
           {menu.map((item) => {
             const isActive = activeMenu === item.id;
@@ -71,22 +75,9 @@ export const NaviTab = () => {
 
                   <span className="relative z-10">{item.name}</span>
                   {item.name === "Wishlist" && !hasSubmittedWishlist && (
-                    <span className="absolute top-2.5 right-2.5 flex h-2 w-2">
-                      <motion.span
-                        animate={{
-                          scale: [1, 1.5, 1],
-                          opacity: [1, 0.4, 1],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                        className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
-                      />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E63946]" />
-                    </span>
+                    <RedDot />
                   )}
+                  {item.name === "Feedback" && !hasSubmitFeedback && <RedDot />}
                 </button>
               </Link>
             );
