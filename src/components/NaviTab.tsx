@@ -9,6 +9,7 @@ import { useAuth } from "../auth/auth-context-core";
 import { useQuery } from "@tanstack/react-query";
 import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
 import { RedDot } from "./RedDot";
+import { getCheckHasSubmitFeedback } from "../api/getCheckHasSubmitFeedback";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
@@ -31,7 +32,13 @@ export const NaviTab = () => {
 
   const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
 
-  const hasSubmitFeedback = false;
+  const getCheckHasSubmitFeedbackQuery = useQuery({
+    queryKey: ["check-has-submit-feedback"],
+    queryFn: () => getCheckHasSubmitFeedback(),
+    refetchOnMount: true,
+  });
+
+  const hasSubmitFeedback = getCheckHasSubmitFeedbackQuery?.data?.hasSubmitted;
 
   useEffect(() => {
     const root = document.documentElement;

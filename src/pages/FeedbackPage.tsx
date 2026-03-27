@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Rating } from "../components/Rating";
 import { cn } from "../utils/cn";
 import { SubmittedFeedbackPage } from "./SubmittedFeedbackPage";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { postFeedback, type TFeedbackRequestBody } from "../api/postFeedback";
+import { getCheckHasSubmitFeedback } from "../api/getCheckHasSubmitFeedback";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -36,9 +39,18 @@ const RATING_QUESTIONS = [
 ];
 
 export const FeedbackPage = () => {
+  const getCheckHasSubmitFeedbackQuery = useQuery({
+    queryKey: ["check-has-submit-feedback"],
+    queryFn: () => getCheckHasSubmitFeedback(),
+  });
+
+  const hasSubmitFeedback = getCheckHasSubmitFeedbackQuery?.data?.hasSubmitted;
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [futureExpectations, setFutureExpectations] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+
+  const sendFeedbackMutation = useMutation({
+    mutationFn: (payload: TFeedbackRequestBody) => postFeedback(payload),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,13 +63,10 @@ export const FeedbackPage = () => {
       future_expectation: futureExpectations,
     };
 
-    console.log(payload);
-    // await api.post('/feedback', payload);
-
-    setSubmitted(true);
+    sendFeedbackMutation.mutate(payload);
   };
 
-  if (submitted) return <SubmittedFeedbackPage />;
+  if (hasSubmitFeedback) return <SubmittedFeedbackPage />;
 
   return (
     <section
