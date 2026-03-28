@@ -20,8 +20,17 @@ const menu = [
 export const NaviTab = () => {
   const { logout } = useAuth();
   const location = useLocation();
+
+  const now = new Date();
+  const isFeedbackPeriod =
+    now.getMonth() === 11 && now.getDate() >= 26 && now.getDate() <= 31;
+
+  const visibleMenu = menu.filter(
+    (item) => item.name !== "Feedback" || isFeedbackPeriod,
+  );
+
   const activeMenu =
-    menu.find((item) => item.link === location.pathname)?.id || 0;
+    visibleMenu.find((item) => item.link === location.pathname)?.id || 0;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
 
@@ -56,7 +65,7 @@ export const NaviTab = () => {
       {/* ✅ Desktop */}
       <div className="hidden md:block bg-white rounded-full w-fit shadow-lg h-fit p-2">
         <div className="flex items-center justify-around gap-4 relative">
-          {menu.map((item) => {
+          {visibleMenu.map((item) => {
             const isActive = activeMenu === item.id;
             return (
               <Link to={item.link} key={item.id}>
@@ -114,7 +123,7 @@ export const NaviTab = () => {
       <MobileDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        menu={menu}
+        menu={visibleMenu}
         activeMenu={activeMenu}
         onChangeMenu={() => {}}
         onLogout={() => logout()}
