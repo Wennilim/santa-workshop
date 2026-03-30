@@ -102,7 +102,7 @@ const SuccessScreen = ({ email, onGoLogin }: SuccessScreenProps) => {
 export const RegisterPage = () => {
   const navigate = useNavigate();
   const { setIsClickLogin } = useGlobalStore();
-
+  const [error, setError] = useState<string>();
   const [status, setStatus] = useState<"idle" | "success">("idle");
   const [registeredEmail, setRegisteredEmail] = useState<string>();
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -133,20 +133,15 @@ export const RegisterPage = () => {
       setRegisteredEmail(data.email);
       setStatus("success");
     },
-    onError: (error) => {
-      console.error("Error registering user:", error);
+    onError: (error: { response: { data: { message: string } } }) => {
+      console.log(error.response.data.message);
+      setStatus("idle");
+      setError(error.response.data.message);
     },
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
     registerMutation.mutate(data);
-    console.log("Form data:", data);
-
-    // Simulate API request
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setRegisteredEmail(data.email);
-    setStatus("success");
   };
 
   const goToLogin = () => {
@@ -196,6 +191,9 @@ export const RegisterPage = () => {
                     placeholder={formatLabel(field.name)}
                     className="w-full py-3 px-6 rounded-[32px] focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] bg-[#E8F5E9]"
                   />
+                  {error && field.name === "email" && (
+                    <p className="text-red-500 text-xs px-4">{error}</p>
+                  )}
 
                   {field.type === "password" && (
                     <button

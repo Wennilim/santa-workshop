@@ -8,6 +8,7 @@ import {
   postResetPassword,
   type TResetPasswordRequestBody,
 } from "../api/postResetPassword";
+import { postVerifyOTP } from "../api/postVerifyOTP";
 
 export const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -26,22 +27,39 @@ export const ForgotPassword = () => {
 
   const forgotPasswordMutation = useMutation({
     mutationFn: (body: { email: string }) => postForgotPassword(body),
-    onSuccess: () => setStep(2),
-    onError: () => {
-      setErrorMsg("Invalid email address");
+    onSuccess: () => {
+      setErrorMsg("");
+      setStep(2);
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Invalid email address");
     },
   });
 
   const resetPasswordMutation = useMutation({
     mutationFn: (body: TResetPasswordRequestBody) => postResetPassword(body),
     onSuccess: () => setStep(4),
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Failed to reset password");
+    },
+  });
+
+  const verifyOTPMutation = useMutation({
+    mutationFn: (body: { email: string; otp: string }) => postVerifyOTP(body),
+    onSuccess: () => {
+      setErrorMsg("");
+      setStep(3);
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Invalid verification code");
+    },
   });
 
   const handleSendOTP = () => {
     if (step === 1) {
       forgotPasswordMutation.mutate({ email });
     } else if (step === 2) {
-      setStep(3);
+      verifyOTPMutation.mutate({ email, otp: pin });
     } else if (step === 3) {
       resetPasswordMutation.mutate({
         email,
@@ -252,16 +270,17 @@ export const ForgotPassword = () => {
               onClick={handleSendOTP}
               disabled={
                 (step === 1 && email === "") ||
-                (step === 2 && pin.length !== 6) ||
+                (step === 2 && (pin.length !== 6 || verifyOTPMutation.isPending)) ||
                 (step === 3 &&
                   (newPassword.password === "" ||
-                    newPassword.confirmPassword === ""))
+                    newPassword.confirmPassword === "" ||
+                    resetPasswordMutation.isPending))
               }
               className="bg-[#F16266] font-bold text-[18px] px-4 py-3 w-full text-white rounded-r-full cursor-pointer shadow disabled:cursor-not-allowed disabled:bg-[#F16266]/50"
             >
-              {step === 1 && "Send OTP"}
-              {step === 2 && "Verify Code"}
-              {step === 3 && "Reset Password"}
+              {step === 1 && (forgotPasswordMutation.isPending ? "Sending..." : "Send OTP")}
+              {step === 2 && (verifyOTPMutation.isPending ? "Verifying..." : "Verify Code")}
+              {step === 3 && (resetPasswordMutation.isPending ? "Resetting..." : "Reset Password")}
             </button>
           </div>
         )}
