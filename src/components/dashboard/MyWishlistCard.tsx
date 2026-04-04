@@ -63,8 +63,8 @@ export const MyWishlistCard = () => {
           wishlist.length && "max-h-[350px] overflow-y-auto",
         )}
       >
-        {wishlist.length ? (
-          wishlist.map((item: { id: number; name: string }) => (
+        {wishlist?.length ? (
+          wishlist?.map((item: { id: number; name: string }) => (
             <WishlistItem
               key={item.id}
               item={item}
