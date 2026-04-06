@@ -124,6 +124,10 @@ export const NaviTab = () => {
         menu={visibleMenu}
         activeMenu={activeMenu}
         onChangeMenu={() => {}}
+        onLogout={() => {
+          setOpenDrawer(false);
+          setIsOpenLogoutModal(true);
+        }}
       />
     </>
   );

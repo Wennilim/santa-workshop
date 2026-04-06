@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
 import { CloseIcon, LogoutIcon } from "../assets/icons";
-import { useAuth } from "../auth/auth-context-core";
 import { cn } from "../utils/cn";
 
 type MenuItem = {
@@ -19,6 +18,7 @@ type MobileDrawerProps = {
   menu: MenuItem[];
   activeMenu: number;
   onChangeMenu: (id: number) => void;
+  onLogout: () => void;
 };
 
 export const MobileDrawer = ({
@@ -27,8 +27,8 @@ export const MobileDrawer = ({
   menu,
   activeMenu,
   onChangeMenu,
+  onLogout,
 }: MobileDrawerProps) => {
-  const { logout } = useAuth();
   const getMySubmittedWishlistQuery = useQuery({
     queryKey: ["my-submitted-wishlist"],
     queryFn: () => getMySubmittedWishlist(),
@@ -177,7 +177,7 @@ export const MobileDrawer = ({
             {/* Footer actions */}
             <button
               aria-label="Logout mobile button"
-              onClick={() => logout()}
+              onClick={onLogout}
               className="mt-6 cursor-pointer flex items-center justify-center gap-2 rounded-2xl bg-[#ff3b3f] text-white py-3 font-bold shadow-[0_4px_10px_rgba(0,0,0,0.15)] active:scale-[0.98] transition"
             >
               <LogoutIcon className="h-5 w-5" />
