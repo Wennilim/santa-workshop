@@ -402,6 +402,8 @@ export const LoginPage = () => {
               <p>
                 <button
                   onClick={() => {
+                    setEmail("");
+                    setPassword("");
                     setIsClickLogin(false);
                     navigate({ to: "/register" });
                   }}
@@ -430,7 +432,11 @@ export const LoginPage = () => {
                 }}
                 type="button"
                 disabled={(isClickLogin && !isFormValid) || login.isPending}
-                onClick={() => navigate({ to: "/register" })}
+                onClick={() => {
+                  navigate({ to: "/register" });
+                  setEmail("");
+                  setPassword("");
+                }}
                 className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center mb-6 bg-[#5C7E6D] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
               >
                 <p className="font-bold">Register</p>
