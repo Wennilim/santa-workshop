@@ -11,7 +11,7 @@ type Department =
   | "design"
   | "management";
 
-export type TRequestBody = {
+export type TRegisterRequestBody = {
   email: string;
   password: string;
   name: string;
@@ -19,7 +19,7 @@ export type TRequestBody = {
   department: Department;
 };
 
-export const postRegister = async (body: TRequestBody) => {
+export const postRegister = async (body: TRegisterRequestBody) => {
   const response = await serverApi.post(`/auth/register`, body);
   return response.data;
 };

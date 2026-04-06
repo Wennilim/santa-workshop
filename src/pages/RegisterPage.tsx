@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
 import {
@@ -13,12 +13,12 @@ import {
   SelectValue,
 } from "../components/ui/Select";
 
-import { useGlobalStore } from "../stores/useGlobalStore";
-import { DEPARTMENTS, GENDERS } from "../constants/register";
-import { formatLabel, keysToLowerCase } from "../utils/casing";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { postRegister, type TRequestBody } from "../api/postRegister";
 import { useMutation } from "@tanstack/react-query";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { postRegister, type TRegisterRequestBody } from "../api/postRegister";
+import { DEPARTMENTS, GENDERS } from "../constants/register";
+import { useGlobalStore } from "../stores/useGlobalStore";
+import { formatLabel, keysToLowerCase } from "../utils/casing";
 
 // =============================
 // Validation Schema
@@ -126,8 +126,8 @@ export const RegisterPage = () => {
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterFormValues) => {
       const payload = keysToLowerCase(data);
-      const response = await postRegister(payload as TRequestBody);
-      return response.data;
+      const response = await postRegister(payload as TRegisterRequestBody);
+      return response;
     },
     onSuccess: (data) => {
       setRegisteredEmail(data.email);
@@ -141,7 +141,7 @@ export const RegisterPage = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    registerMutation.mutate(data);
+    await registerMutation.mutateAsync(data);
   };
 
   const goToLogin = () => {
