@@ -1,22 +1,51 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { cn } from "../utils/cn";
-import { MobileDrawer } from "./MobileDrawer";
-import { LogoutIcon, MenuIcon } from "../assets/icons";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getCheckHasSubmitFeedback } from "../api/getCheckHasSubmitFeedback";
+import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
+import { LogoutIcon, MenuIcon } from "../assets/icons";
+import { cn } from "../utils/cn";
 import { LogoutModal } from "./dashboard/LogoutModal";
+import { MobileDrawer } from "./MobileDrawer";
+import { RedDot } from "./RedDot";
 
 const menu = [
   { id: 1, name: "Dashboard", link: "/" },
   { id: 2, name: "Wishlist", link: "/wishlist" },
+  { id: 3, name: "Feedback", link: "/feedback" },
 ];
 
 export const NaviTab = () => {
   const location = useLocation();
+
+  const now = new Date();
+  const isFeedbackPeriod =
+    now.getMonth() === 11 && now.getDate() >= 26 && now.getDate() <= 31;
+
+  const visibleMenu = menu.filter(
+    (item) => item.name !== "Feedback" || isFeedbackPeriod,
+  );
+
   const activeMenu =
-    menu.find((item) => item.link === location.pathname)?.id || 0;
+    visibleMenu.find((item) => item.link === location.pathname)?.id || 0;
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
+
+  const getMySubmittedWishlistQuery = useQuery({
+    queryKey: ["my-submitted-wishlist"],
+    queryFn: () => getMySubmittedWishlist(),
+  });
+
+  const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
+
+  const getCheckHasSubmitFeedbackQuery = useQuery({
+    queryKey: ["check-has-submit-feedback"],
+    queryFn: () => getCheckHasSubmitFeedback(),
+    refetchOnMount: true,
+  });
+
+  const hasSubmitFeedback = getCheckHasSubmitFeedbackQuery?.data?.hasSubmitted;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -32,9 +61,9 @@ export const NaviTab = () => {
         setIsOpen={setIsOpenLogoutModal}
       />
       {/* ✅ Desktop */}
-      <div className="hidden md:block bg-white rounded-full w-[320px] shadow-lg h-fit p-2">
+      <div className="hidden md:block bg-white rounded-full w-fit shadow-lg h-fit p-2">
         <div className="flex items-center justify-around gap-4 relative">
-          {menu.map((item) => {
+          {visibleMenu.map((item) => {
             const isActive = activeMenu === item.id;
             return (
               <Link to={item.link} key={item.id}>
@@ -59,25 +88,10 @@ export const NaviTab = () => {
                   )}
 
                   <span className="relative z-10">{item.name}</span>
-                  {item.name === "Wishlist" &&
-                    sessionStorage.getItem("isLockWishlistSubmission") !==
-                      "true" && (
-                      <span className="absolute top-2.5 right-2.5 flex h-2 w-2">
-                        <motion.span
-                          animate={{
-                            scale: [1, 1.5, 1],
-                            opacity: [1, 0.4, 1],
-                          }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                          className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
-                        />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E63946]" />
-                      </span>
-                    )}
+                  {item.name === "Wishlist" && !hasSubmittedWishlist && (
+                    <RedDot />
+                  )}
+                  {item.name === "Feedback" && !hasSubmitFeedback && <RedDot />}
                 </button>
               </Link>
             );
@@ -107,10 +121,13 @@ export const NaviTab = () => {
       <MobileDrawer
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        menu={menu}
+        menu={visibleMenu}
         activeMenu={activeMenu}
         onChangeMenu={() => {}}
-        onLogout={() => console.log("logout")}
+        onLogout={() => {
+          setOpenDrawer(false);
+          setIsOpenLogoutModal(true);
+        }}
       />
     </>
   );

@@ -9,7 +9,7 @@ export const WinningModal = ({
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  winner: string | null;
+  winner: string | undefined;
 }) => {
   const navigate = useNavigate();
   return (
@@ -36,7 +36,6 @@ export const WinningModal = ({
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                   setIsOpen(false);
-                  // store in API later on
                   sessionStorage.setItem("winner", winner || "");
                   navigate({ to: "/recipient-wishlist" });
                 }}

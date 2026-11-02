@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { useEffect } from "react";
 import { CloseIcon } from "../../assets/icons";
 import { useAuth } from "../../auth/auth-context-core";
 import { useNavigate } from "@tanstack/react-router";
@@ -53,6 +54,22 @@ export const LogoutModal = ({
 }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, setIsOpen]);
 
   return (
     <AnimatePresence mode="wait">

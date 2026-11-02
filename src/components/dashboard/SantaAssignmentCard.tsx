@@ -1,5 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { motion, type Variants } from "framer-motion";
+import { getRecipient } from "../../api/getRecipient";
+import { getRevealStatus } from "../../api/getRevealStatus";
+import { getMyRecipientRevealStatus } from "../../api/getMyRecipientRevealStatus";
+import { cn } from "../../utils/cn";
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -15,7 +20,32 @@ const itemVariants: Variants = {
 };
 
 export const SantaAssignmentCard = () => {
-  const hasRevealedSanta = sessionStorage.getItem("winner");
+  const navigate = useNavigate();
+
+  const getRevealStatusQuery = useQuery({
+    queryKey: ["reveal-status"],
+    queryFn: getRevealStatus,
+  });
+
+  const hasSpinLaunched = getRevealStatusQuery?.data?.status === "revealed";
+
+  const getMyRecipientRevealStatusQuery = useQuery({
+    queryKey: ["my-recipient-reveal-status"],
+    queryFn: getMyRecipientRevealStatus,
+    enabled: hasSpinLaunched,
+  });
+
+  const hasRevealedSanta = Boolean(
+    getMyRecipientRevealStatusQuery?.data?.hasRevealedRecipient
+  );
+
+  const getRecipientQuery = useQuery({
+    queryKey: ["recipient"],
+    queryFn: getRecipient,
+    enabled: hasSpinLaunched && hasRevealedSanta,
+  });
+
+  const recipientName = getRecipientQuery?.data?.recipient_nickname
   return (
     <div className="bg-[#D8F3DC] rounded-[50px] border-8 border-white shadow-lg p-8 md:p-12 relative w-full">
       <div className="flex flex-col justify-between h-full relative">
@@ -33,8 +63,11 @@ export const SantaAssignmentCard = () => {
           {hasRevealedSanta ? (
             <p className="text-[16px] sm:text-[18px] md:text-[22px] text-[#2d6a4f] max-w-[480px] lg:max-w-[500px] text-center sm:text-left">
               You have been matched with &nbsp;
-              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[32px]">
-                {hasRevealedSanta}
+              <span className="font-bold font-[dynapuff] underline text-[#2D6A4F] lg:text-[28px] uppercase">
+                {getRecipientQuery?.data?.recipient_gender === "male"
+                  ? "Mr."
+                  : "Ms."}{" "}
+                {recipientName}
               </span>
               &nbsp; for this Christmas gift exchange.
             </p>
@@ -46,47 +79,63 @@ export const SantaAssignmentCard = () => {
           )}
         </div>
         {hasRevealedSanta ? (
-          <Link to="/recipient-wishlist">
-            <motion.button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              variants={itemVariants}
-              whileHover={{
-                boxShadow: "0 20px 40px",
-                y: -5,
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="bg-[#2d6a4f] mt-8 lg:mt-5 xl:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
-            >
-              <img src="/icons/eye.svg" alt="eye icon" />
-              <p className="text-[14px] md:text-[16px] font-semibold">
-                View HIS / HER Wishlist
-              </p>
-            </motion.button>
-          </Link>
+          <motion.button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              navigate({ to: "/recipient-wishlist" });
+            }}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+            whileHover={{
+              boxShadow: "0 20px 40px",
+              y: -5,
+            }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="bg-[#2d6a4f] mt-8 lg:mt-5 xl:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
+          >
+            <img src="/icons/eye.svg" alt="eye icon" />
+            <p className="text-[14px] md:text-[16px] font-semibold">
+              View HIS / HER Wishlist
+            </p>
+          </motion.button>
         ) : (
-          <Link to="/spin">
-            <motion.button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              variants={itemVariants}
-              whileHover={{
-                boxShadow: "0 20px 40px",
-                y: -5,
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="bg-[#2d6a4f] mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit"
-            >
-              <img src="/icons/eye.svg" alt="eye icon" />
-              <p className="text-[14px] md:text-[16px] font-semibold">
-                Reveal My Recipient
-              </p>
-            </motion.button>
-          </Link>
+          <motion.button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              if (hasSpinLaunched) {
+                navigate({ to: "/spin" });
+              }
+            }}
+            initial="hidden"
+            animate="visible"
+            variants={itemVariants}
+            whileHover={{
+              boxShadow: "0 20px 40px",
+              y: -5,
+            }}
+            whileTap={{ scale: hasSpinLaunched ? 0.95 : 1 }}
+            transition={{
+              type: "spring",
+              stiffness: hasSpinLaunched ? 400 : 0,
+              damping: hasSpinLaunched ? 17 : 0,
+            }}
+            className={cn(
+              "mt-8 lg:mt-0 cursor-pointer text-white rounded-[50px] py-2 md:py-4 px-4 md:px-8 flex justify-center md:justify-start items-center gap-2 w-full sm:w-fit",
+              hasSpinLaunched
+                ? "bg-[#2d6a4f]"
+                : "bg-[#2d6a4f]/50 cursor-not-allowed",
+            )}
+          >
+            <img
+              src={hasSpinLaunched ? "/icons/eye.svg" : "/icons/lock.svg"}
+              alt="eye icon"
+            />
+            <p className="text-[14px] md:text-[16px] font-semibold">
+              {hasSpinLaunched ? "Reveal My Recipient" : "Event not started."}
+            </p>
+          </motion.button>
         )}
 
         <img

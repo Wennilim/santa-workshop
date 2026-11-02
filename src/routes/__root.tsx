@@ -1,9 +1,14 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import type { AuthContextValue } from "../auth/auth-types";
+import { QueryClient } from "@tanstack/react-query";
+import { AuthErrorModal } from "../components/AuthErrorModal";
+
 
 interface MyRouterContext {
   auth: AuthContextValue;
+  queryClient: QueryClient;
 }
+
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
@@ -11,7 +16,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <AuthErrorModal />
+    </>
+  );
 }
 
 function NotFoundComponent() {

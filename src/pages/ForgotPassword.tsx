@@ -2,8 +2,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { PinInput } from "../components/forgot-password/PinInput";
 import { useNavigate } from "@tanstack/react-router";
-
-const OTP = "123456";
+import { useMutation } from "@tanstack/react-query";
+import { postForgotPassword } from "../api/postForgotPassword";
+import {
+  postResetPassword,
+  type TResetPasswordRequestBody,
+} from "../api/postResetPassword";
+import { postVerifyOTP } from "../api/postVerifyOTP";
 
 export const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -20,30 +25,48 @@ export const ForgotPassword = () => {
     confirmPassword: false,
   });
 
+  const forgotPasswordMutation = useMutation({
+    mutationFn: (body: { email: string }) => postForgotPassword(body),
+    onSuccess: () => {
+      setErrorMsg("");
+      setStep(2);
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Invalid email address");
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: (body: TResetPasswordRequestBody) => postResetPassword(body),
+    onSuccess: () => setStep(4),
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Failed to reset password");
+    },
+  });
+
+  const verifyOTPMutation = useMutation({
+    mutationFn: (body: { email: string; otp: string }) => postVerifyOTP(body),
+    onSuccess: () => {
+      setErrorMsg("");
+      setStep(3);
+    },
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      setErrorMsg(error.response?.data?.message || "Invalid verification code");
+    },
+  });
+
   const handleSendOTP = () => {
     if (step === 1) {
-      setStep(2);
-      setErrorMsg("");
-      // fire API - send email address to backend which send OTP for user
+      forgotPasswordMutation.mutate({ email });
     } else if (step === 2) {
-      if (pin === OTP) {
-        setErrorMsg("");
-        console.log("OTP Verified!");
-        setStep(3);
-      } else {
-        setErrorMsg("Incorrect verification code");
-      }
+      verifyOTPMutation.mutate({ email, otp: pin });
     } else if (step === 3) {
-      if (newPassword.password !== newPassword.confirmPassword) {
-        setErrorMsg("Passwords do not match");
-      } else if (newPassword.password.length < 6) {
-        setErrorMsg("Password must be at least 6 characters");
-      } else {
-        setErrorMsg("");
-        // fire API - update password
-        console.log("Password Reset Successful!");
-        setStep(4);
-      }
+      resetPasswordMutation.mutate({
+        email,
+        otp: pin,
+        newPassword: newPassword.password,
+        confirmNewPassword: newPassword.confirmPassword,
+      });
     }
   };
 
@@ -247,16 +270,17 @@ export const ForgotPassword = () => {
               onClick={handleSendOTP}
               disabled={
                 (step === 1 && email === "") ||
-                (step === 2 && pin === "") ||
+                (step === 2 && (pin.length !== 6 || verifyOTPMutation.isPending)) ||
                 (step === 3 &&
                   (newPassword.password === "" ||
-                    newPassword.confirmPassword === ""))
+                    newPassword.confirmPassword === "" ||
+                    resetPasswordMutation.isPending))
               }
               className="bg-[#F16266] font-bold text-[18px] px-4 py-3 w-full text-white rounded-r-full cursor-pointer shadow disabled:cursor-not-allowed disabled:bg-[#F16266]/50"
             >
-              {step === 1 && "Send OTP"}
-              {step === 2 && "Send Code"}
-              {step === 3 && "Reset Password"}
+              {step === 1 && (forgotPasswordMutation.isPending ? "Sending..." : "Send OTP")}
+              {step === 2 && (verifyOTPMutation.isPending ? "Verifying..." : "Verify Code")}
+              {step === 3 && (resetPasswordMutation.isPending ? "Resetting..." : "Reset Password")}
             </button>
           </div>
         )}

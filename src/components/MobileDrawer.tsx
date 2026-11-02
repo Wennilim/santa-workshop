@@ -1,8 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
+import { getMySubmittedWishlist } from "../api/getMySubmittedWishlist";
 import { CloseIcon, LogoutIcon } from "../assets/icons";
 import { cn } from "../utils/cn";
-import { Link } from "@tanstack/react-router";
 
 type MenuItem = {
   id: number;
@@ -16,7 +18,7 @@ type MobileDrawerProps = {
   menu: MenuItem[];
   activeMenu: number;
   onChangeMenu: (id: number) => void;
-  onLogout?: () => void;
+  onLogout: () => void;
 };
 
 export const MobileDrawer = ({
@@ -27,7 +29,12 @@ export const MobileDrawer = ({
   onChangeMenu,
   onLogout,
 }: MobileDrawerProps) => {
-  // ESC 关闭 + 锁背景滚动
+  const getMySubmittedWishlistQuery = useQuery({
+    queryKey: ["my-submitted-wishlist"],
+    queryFn: () => getMySubmittedWishlist(),
+  });
+  const hasSubmittedWishlist = getMySubmittedWishlistQuery?.data?.length !== 0;
+  const hasSubmitFeedback = false;
   useEffect(() => {
     if (!open) return;
 
@@ -123,25 +130,41 @@ export const MobileDrawer = ({
                       )}
 
                       <span className="relative z-10">{item.name}</span>
-                      {item.name === "Wishlist" &&
-                        sessionStorage.getItem("isLockWishlistSubmission") !==
-                          "true" && (
-                          <span className="absolute top-4 right-4 flex h-3 w-3">
-                            <motion.span
-                              animate={{
-                                scale: [1, 1.5, 1],
-                                opacity: [1, 0.4, 1],
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                              }}
-                              className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
-                            />
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
-                          </span>
-                        )}
+                      {item.name === "Wishlist" && !hasSubmittedWishlist && (
+                        <span className="absolute top-4 right-4 flex h-3 w-3">
+                          <motion.span
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [1, 0.4, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
+                          />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
+                        </span>
+                      )}
+
+                      {item.name === "Feedback" && !hasSubmitFeedback && (
+                        <span className="absolute top-4 right-4 flex h-3 w-3">
+                          <motion.span
+                            animate={{
+                              scale: [1, 1.5, 1],
+                              opacity: [1, 0.4, 1],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            className="absolute inline-flex h-full w-full rounded-full bg-[#E63946] opacity-75"
+                          />
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E63946]" />
+                        </span>
+                      )}
                     </button>
                   </Link>
                 );

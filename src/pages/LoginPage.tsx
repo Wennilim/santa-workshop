@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useAuth } from "../auth/auth-context-core";
 import { router } from "../router";
 import { cn } from "../utils/cn";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { RememberMe } from "../components/login/RememberMe";
 import { useGlobalStore } from "../stores/useGlobalStore";
+import { postLogin } from "../api/postLogin";
+import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "../auth/auth-context-core";
 
 const containerVariants: Variants = {
   hidden: {
@@ -64,18 +66,18 @@ const features = [
 
 export const LoginPage = () => {
   const { isClickLogin, setIsClickLogin } = useGlobalStore();
-
+  const auth = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(
-    () => localStorage.getItem("remember_me") === "true",
+    () => sessionStorage.getItem("remember_me") === "true",
   );
   const [email, setEmail] = useState(() => {
     const sessionEmail = sessionStorage.getItem("login_email");
     if (sessionEmail) return sessionEmail;
 
-    const isRemembered = localStorage.getItem("remember_me") === "true";
+    const isRemembered = sessionStorage.getItem("remember_me") === "true";
     if (isRemembered) {
-      return localStorage.getItem("remembered_email") || "";
+      return sessionStorage.getItem("remembered_email") || "";
     }
     return "";
   });
@@ -83,20 +85,69 @@ export const LoginPage = () => {
     const sessionPassword = sessionStorage.getItem("login_password");
     if (sessionPassword) return sessionPassword;
 
-    const isRemembered = localStorage.getItem("remember_me") === "true";
+    const isRemembered = sessionStorage.getItem("remember_me") === "true";
     if (isRemembered) {
-      return localStorage.getItem("remembered_password") || "";
+      return sessionStorage.getItem("remembered_password") || "";
     }
     return "";
   });
   const [error, setError] = useState("");
-  const { login } = useAuth();
   const navigate = useNavigate();
   const search = useSearch({ from: "/login" });
-  const [isLoading, setIsLoading] = useState(false);
+
+  const login = useMutation({
+    mutationFn: () =>
+      postLogin({
+        email,
+        password,
+      }),
+    onSuccess: async (data: {
+      access_token: string;
+      user: {
+        id: string;
+        fullname: string;
+        gender: string;
+        department: string;
+      };
+    }) => {
+      sessionStorage.setItem("accessToken", data.access_token);
+
+      // Save credentials if Remember Me is checked, otherwise clear them
+      if (rememberMe) {
+        sessionStorage.setItem("remembered_email", email);
+        sessionStorage.setItem("remembered_password", password);
+      } else {
+        sessionStorage.removeItem("remembered_email");
+        sessionStorage.removeItem("remembered_password");
+      }
+
+      // Always clear the temporary typing state upon successful login
+      sessionStorage.removeItem("login_email");
+      sessionStorage.removeItem("login_password");
+
+      auth.login({ id: data.user.id, name: data.user.fullname });
+      // auth.login()
+      // 等待 router 刷新状态
+      // navigate() -> Router 确认你已经登录
+      //            -> 成功进入 Dashboard
+      await router.invalidate();
+      await navigate({ to: search.redirect || "/" });
+    },
+    onError: () => {
+      setError("Invalid email or password. Please try again.");
+      setPassword(""); // Clear password but keep email for convenience
+    },
+  });
+
+  const handleRememberMeChange = (checked: boolean) => {
+    setRememberMe(checked);
+    sessionStorage.setItem("remember_me", checked.toString());
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 第一次点击 Login → 只展开表单
     if (!isClickLogin) {
       setIsClickLogin(true);
       return;
@@ -123,45 +174,7 @@ export const LoginPage = () => {
       return;
     }
 
-    // SIMULATED BACKEND CALL
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Simple mock check
-      // In a real app, this would be an API call
-      if (email === "test@atoz-software.tech" && password === "password123") {
-        // Clear sessionStorage on successful login
-        sessionStorage.removeItem("login_email");
-        sessionStorage.removeItem("login_password");
-
-        // Handle Remember Me
-        if (rememberMe) {
-          localStorage.setItem("remember_me", "true");
-          localStorage.setItem("remembered_email", email);
-          localStorage.setItem("remembered_password", password);
-        } else {
-          localStorage.removeItem("remember_me");
-          localStorage.removeItem("remembered_email");
-          localStorage.removeItem("remembered_password");
-        }
-
-        login({ id: "1", name: "Santa" });
-        // CRITICAL: Invalidate the router to force it to re-read the auth context
-        await router.invalidate();
-        navigate({ to: search.redirect || "/" });
-      } else {
-        setError("Invalid email or password. Please try again.");
-        setPassword(""); // Clear password but keep email for convenience
-      }
-    } catch {
-      setError("Something went wrong. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
+    login.mutate();
   };
 
   const isFormValid = email.trim() !== "" && password.length >= 6;
@@ -260,7 +273,7 @@ export const LoginPage = () => {
                     variants={itemVariants}
                     type="text"
                     placeholder="Email"
-                    disabled={isLoading}
+                    disabled={login.isPending}
                     value={email}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -278,7 +291,7 @@ export const LoginPage = () => {
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
-                      disabled={isLoading}
+                      disabled={login.isPending}
                       value={password}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -325,7 +338,10 @@ export const LoginPage = () => {
                     </button>
                   </motion.div>
                   <div className="flex items-center justify-between w-full">
-                    <RememberMe checked={rememberMe} onChange={setRememberMe} />
+                    <RememberMe
+                      checked={rememberMe}
+                      onChange={handleRememberMeChange}
+                    />
                     <button
                       type="button"
                       className="text-[#92400E] font-bold text-[14px] cursor-pointer hover:underline"
@@ -358,13 +374,15 @@ export const LoginPage = () => {
               aria-label="Login button"
               variants={itemVariants}
               whileHover={{
-                scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 1.04,
+                scale:
+                  (isClickLogin && !isFormValid) || login.isPending ? 1 : 1.04,
               }}
               whileTap={{
-                scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 0.96,
+                scale:
+                  (isClickLogin && !isFormValid) || login.isPending ? 1 : 0.96,
               }}
               type="submit"
-              disabled={(isClickLogin && !isFormValid) || isLoading}
+              disabled={(isClickLogin && !isFormValid) || login.isPending}
               className={cn(
                 "flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center gap-2 bg-[#F16266] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]",
                 {
@@ -373,17 +391,19 @@ export const LoginPage = () => {
                 },
               )}
             >
-              {isLoading && (
+              {login.isPending && (
                 <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               )}
               <p className="font-bold">
-                {isLoading ? "Logging in..." : "Login"}
+                {login.isPending ? "Logging in..." : "Login"}
               </p>
             </motion.button>
             {isClickLogin && (
               <p>
                 <button
                   onClick={() => {
+                    setEmail("");
+                    setPassword("");
                     setIsClickLogin(false);
                     navigate({ to: "/register" });
                   }}
@@ -399,14 +419,24 @@ export const LoginPage = () => {
                 aria-label="Register button"
                 variants={itemVariants}
                 whileHover={{
-                  scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 1.04,
+                  scale:
+                    (isClickLogin && !isFormValid) || login.isPending
+                      ? 1
+                      : 1.04,
                 }}
                 whileTap={{
-                  scale: (isClickLogin && !isFormValid) || isLoading ? 1 : 0.96,
+                  scale:
+                    (isClickLogin && !isFormValid) || login.isPending
+                      ? 1
+                      : 0.96,
                 }}
                 type="button"
-                disabled={(isClickLogin && !isFormValid) || isLoading}
-                onClick={() => navigate({ to: "/register" })}
+                disabled={(isClickLogin && !isFormValid) || login.isPending}
+                onClick={() => {
+                  navigate({ to: "/register" });
+                  setEmail("");
+                  setPassword("");
+                }}
                 className="flex justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer items-center mb-6 bg-[#5C7E6D] text-white rounded-[32px] w-full py-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
               >
                 <p className="font-bold">Register</p>
