@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { motion, type Variants } from "framer-motion";
 import { getRecipient } from "../../api/getRecipient";
 import { getRevealStatus } from "../../api/getRevealStatus";
+import { getMyRecipientRevealStatus } from "../../api/getMyRecipientRevealStatus";
 import { cn } from "../../utils/cn";
 
 const itemVariants: Variants = {
@@ -28,14 +29,23 @@ export const SantaAssignmentCard = () => {
 
   const hasSpinLaunched = getRevealStatusQuery?.data?.status === "revealed";
 
-  const getRecipientQuery = useQuery({
-    queryKey: ["recipient"],
-    queryFn: getRecipient,
+  const getMyRecipientRevealStatusQuery = useQuery({
+    queryKey: ["my-recipient-reveal-status"],
+    queryFn: getMyRecipientRevealStatus,
     enabled: hasSpinLaunched,
   });
 
-  const hasRevealedSanta = getRecipientQuery?.data?.recipient_nickname;
+  const hasRevealedSanta = Boolean(
+    getMyRecipientRevealStatusQuery?.data?.hasRevealedRecipient
+  );
 
+  const getRecipientQuery = useQuery({
+    queryKey: ["recipient"],
+    queryFn: getRecipient,
+    enabled: hasSpinLaunched && hasRevealedSanta,
+  });
+
+  const recipientName = getRecipientQuery?.data?.recipient_nickname
   return (
     <div className="bg-[#D8F3DC] rounded-[50px] border-8 border-white shadow-lg p-8 md:p-12 relative w-full">
       <div className="flex flex-col justify-between h-full relative">
@@ -57,7 +67,7 @@ export const SantaAssignmentCard = () => {
                 {getRecipientQuery?.data?.recipient_gender === "male"
                   ? "Mr."
                   : "Ms."}{" "}
-                {hasRevealedSanta}
+                {recipientName}
               </span>
               &nbsp; for this Christmas gift exchange.
             </p>

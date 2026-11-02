@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { getUserList } from "../../api/getUserList";
@@ -65,6 +65,8 @@ export const Roulette = ({
 
   const controls = useAnimation();
 
+  const queryClient = useQueryClient();
+
   const [rotation, setRotation] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -122,6 +124,11 @@ export const Roulette = ({
       // 5️⃣ 设置 winner
       setWinner(res.data);
       setRotation(finalRotation);
+      queryClient.setQueryData(["my-recipient-reveal-status"], {
+        hasRevealedRecipient: true,
+      });
+      queryClient.invalidateQueries({ queryKey: ["my-recipient-reveal-status"] });
+      queryClient.invalidateQueries({ queryKey: ["recipient"] });
       setIsOpen(true);
     } catch (err) {
       console.error(err);

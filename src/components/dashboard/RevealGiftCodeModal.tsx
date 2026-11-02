@@ -1,19 +1,43 @@
 import { AnimatePresence, type Variants } from "framer-motion";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CloseIcon } from "../../assets/icons";
+import { getRulesAgenda } from "../../api/getRulesAgenda";
 
 export const RevealGiftCodeModal = ({
   giftCode,
   nickname,
   isOpenRevealModal,
   setIsRevealModal,
+  eventDate: eventDateProp,
 }: {
   giftCode: string;
   nickname: string | undefined;
   isOpenRevealModal: boolean;
   setIsRevealModal: (isOpenRevealModal: boolean) => void;
+  eventDate?: string;
 }) => {
+  const getRulesAgendaQuery = useQuery({
+    queryKey: ["rules-agenda"],
+    queryFn: getRulesAgenda,
+    enabled: !eventDateProp,
+  });
+
+  const eventDate = eventDateProp ?? getRulesAgendaQuery.data?.date_event;
+
+  const formattedDate = (() => {
+    if (!eventDate) return "Dec 24";
+    const parsed = new Date(
+      eventDate.includes("T") ? eventDate : eventDate.replace(/-/g, "/"),
+    );
+    return isNaN(parsed.getTime())
+      ? "Dec 24"
+      : parsed.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+  })();
   const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -127,8 +151,8 @@ export const RevealGiftCodeModal = ({
                 variants={itemVariants}
                 className="text-lg font-[dynapuff] px-4 font-semibold lg:text-[20px] text-center leading-relaxed"
               >
-                Gift code is not available yet. Come back after 1 PM
-                on Dec 24 🎄
+                Gift code is not available yet. Come back after 1 PM on{" "}
+                {formattedDate} 🎄
               </motion.p>
             )}
           </motion.div>

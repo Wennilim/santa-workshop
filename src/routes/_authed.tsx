@@ -39,7 +39,7 @@ function AuthedLayout() {
           Gift Giving Guide
         </button>
         <p className="text-sm text-gray-400">
-          &copy; 2026 Santa Workshop. All rights reserved.
+          &copy; {new Date().getFullYear()} Santa Workshop. All rights reserved.
         </p>
       </footer>
     </div>

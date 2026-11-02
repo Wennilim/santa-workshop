@@ -7,6 +7,7 @@ import { AUTH_STORAGE_KEY } from "../auth/auth-context";
 import { useState } from "react";
 import { RevealGiftCodeModal } from "../components/dashboard/RevealGiftCodeModal";
 import { getMyGiftCode } from "../api/getMyGiftCode";
+import { getRulesAgenda } from "../api/getRulesAgenda";
 import { useQuery } from "@tanstack/react-query";
 
 const container: Variants = {
@@ -47,8 +48,13 @@ export const DashboardPage = () => {
     queryFn: getMyGiftCode,
     enabled: false,
   });
+  const getRulesAgendaQuery = useQuery({
+    queryKey: ["rules-agenda"],
+    queryFn: getRulesAgenda,
+  });
   const nickname = getMyGiftCodeQuery.data?.nickname;
   const giftCode = getMyGiftCodeQuery.data?.giftCode;
+  const eventDate = getRulesAgendaQuery.data?.date_event;
 
   return (
     <>
@@ -59,6 +65,7 @@ export const DashboardPage = () => {
             nickname,
             isOpenRevealModal,
             setIsRevealModal,
+            eventDate,
           }}
         />
       )}
