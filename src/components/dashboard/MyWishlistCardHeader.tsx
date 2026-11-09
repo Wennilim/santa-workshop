@@ -12,7 +12,7 @@ export const MyWishlistCardHeader = ({
       <div className="flex items-center gap-6">
         <img src="/icons/wishlist.svg" className="size-12" />
         <h5 className="font-[dynapuff] text-[24px] md:text-[32px] font-bold text-[#E63946]">
-          My Wishlist
+          Wishlist Draft
         </h5>
       </div>
 

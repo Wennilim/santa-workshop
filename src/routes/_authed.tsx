@@ -34,11 +34,12 @@ function AuthedLayout() {
             navigate({ to: "/gift-giving-guide" });
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="text-sm text-gray-400 hover:font-bold cursor-pointer transition-all duration-200 ease-in-out"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#2D6A4F] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#1B4332] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2D6A4F] focus-visible:ring-offset-2 active:translate-y-0"
         >
           Gift Giving Guide
+          <span aria-hidden="true">→</span>
         </button>
-        <p className="text-sm text-gray-400">
+        <p className="mt-2 text-sm text-gray-400">
           &copy; {new Date().getFullYear()} Santa Workshop. All rights reserved.
         </p>
       </footer>

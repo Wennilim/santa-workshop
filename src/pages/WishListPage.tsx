@@ -292,6 +292,15 @@ export const WishListPage = () => {
               >
                 Time share your heart's desires for this year's Secret Santa!
               </motion.p>
+
+              <motion.p
+                role="note"
+                className="mx-4 max-w-xl rounded-2xl border-2 border-[#D97706]/30 bg-[#FEF3C7]/80 px-5 py-3 text-center text-[14px] font-semibold text-[#92400E] shadow-sm md:text-[16px]"
+                variants={itemVariants}
+              >
+                Choose your wishes carefully—once your wishlist is sent to
+                Santa, it cannot be changed.
+              </motion.p>
             </motion.div>
             <motion.div
               className="flex flex-col items-center gap-12 lg:mx-48 md:mx-12 py-12"
