@@ -20,7 +20,8 @@ import { WinningModal } from "./WinningModal";
 import { getRecipient } from "../../api/getRecipient";
 
 type TUser = {
-  nickName: string;
+  nickName: string | null;
+  fullname: string | null;
 };
 
 const renderIcon = (segment: Segment, className: string) => {
@@ -52,7 +53,10 @@ export const Roulette = ({
     queryFn: getUserList,
   });
 
-  const NAMES = getUserQuery.data?.map((user: TUser) => user.nickName) || [];
+  const NAMES =
+    getUserQuery.data
+      ?.map((user: TUser) => user.nickName || user.fullname)
+      .filter((name: string | null): name is string => Boolean(name)) || [];
 
   const SEGMENTS: Segment[] = NAMES.map((name: string, i: number) => ({
     name: name.toUpperCase(),
