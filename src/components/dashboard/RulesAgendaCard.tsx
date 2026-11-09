@@ -197,7 +197,7 @@ export const RulesAgendaCard = () => {
                 Agenda
               </h5>
             </div>
-            <div className="flex flex-col gap-3 md:p-4">
+            <div className="flex flex-col gap-3 sm:pr-[190px] md:py-4 md:pl-4 lg:pr-[140px] xl:pr-[190px]">
               {agenda?.length ? (
                 agenda.map((item: TAgendaBox) => (
                   <AgendaBox key={item.title} {...item} />
